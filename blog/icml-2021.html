@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2021-06-05" />
+  <title>Recap on ICML 2021</title>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <script type="text/javascript" src="https://livejs.com/live.js"></script>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+  <link href="../css/style.css" rel="stylesheet" type="text/css">
+  <link href="css/style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<!--Navigation bar-->
+<div id="nav-placeholder">
+</div>
+
+<script>
+$(function(){
+  $("#nav-placeholder").load("../nav.html");
+});
+</script>
+<!--end of Navigation bar-->
+
+<header id="title-block-header">
+<h1 class="title">Recap on ICML 2021</h1>
+<p class="date">June 5, 2021</p>
+</header>
+<h3 id="summary">Summary</h3>
+<p>I have been attending ICML virtually this year - a few papers caught my attention, mostly because they tackle issues related to what I am currently thinking about: generative models.</p>
+<p>Summarizing a paper is a great exercise: putting thoughts into words requires to reach a substantial level of understanding of the paper. Some amount of litterature review is needed to understand the problem setting as well as previous work, which can help to form a high level mental image of the field. Moreover, unlike for your own papers, you can be as vocal as you want about potential weaknesses of the contributions, which help put things in perspective.</p>
+<p>For that reason, I summarized two papers presented in ICML 2021: <em>Conjugate Energy Based Models</em>, and <em>Generative Particle Variational Inference via Estimation of Functional Gradients</em>. I focused on explaining the initial motivation and the high-level structure of the algorithm, and purposely skipped many details and training tricks described at length in the papers.</p>
+<p>Finally, I also included a list of other papers that I enjoyed, but did not summarize.</p>
+<h3 id="conjugate-energy-based-models-cebm"><a href="http://proceedings.mlr.press/v139/wu21a.html">Conjugate Energy Based models (CEBM)</a></h3>
+<p>TL;DR: CEBMs are Latent variables energy-based models that are trained by comparing structure in latent variable (<span class="math inline">\(z \in \mathbb R^K\)</span>) space instead of observed variable space (<span class="math inline">\(x \in \mathbb R^d, d \gg K\)</span>). Authors argue that comparing similarities in latent variable space is better as latent variables contain less variability coming from irrelevant noise.</p>
+<p><img src="images/vae-vs-cebm.png" alt="Image" /> <em>Differences between VAEs and CEBMs. Picture credits: CEBM paper.</em></p>
+<h4 id="background-of-latent-variable-generative-models">Background of Latent variable generative models</h4>
+<p>This article introduces a new form of latent energy based models (LEBM). LEBMs are models of the form <span class="math display">\[p(x, z) = \frac{e^{-E_\theta(x, z)}}{Z(\theta)}\]</span></p>
+<p>Fitting an LEBMs against some observed data <span class="math inline">\(\{x^{(i)}\}_{i=1}^{N}\)</span> is usually done using <a href="https://www.cs.toronto.edu/~hinton/absps/tr00-004.pdf">contrastive divergence</a>, which is a twist on approximate gradient-based Likelihood optimization with faster effective runtime. Energy based models are praised for their high flexibility: any structure on the observed and latent variables can be specified through the energy function <span class="math inline">\(E\)</span>.</p>
+<h4 id="structure-of-cebms">Structure of CEBMs</h4>
+<p>Conditional Energy Based Models (introduced in the paper) define an energy <span class="math inline">\(E_\theta(x, z)\)</span> that ensures:</p>
+<ul>
+<li>A parametrized conditional <span class="math inline">\(p(x \mid z) \propto e^{\left \langle T_\theta(x), \eta(z) \right \rangle} (\eta(z) \in \mathbb R^H, H \sim K \ll d)\)</span> (with untractable normalizing constant).</li>
+<li>A posterior <span class="math inline">\(p(z \mid x)\)</span> made tractable thanks to a conjugacy trick, allowing for cheap inference.</li>
+<li>A parametrized prior-like bias on z, <span class="math inline">\(B_\lambda(z)\)</span> included in the energy <span class="math inline">\(E(x, z)\)</span>.</li>
+</ul>
+<p>The likelihood <span class="math inline">\(p(x)\)</span> of CEBM can be shown to be of the form <span class="math inline">\(e^{-E(x)}/Z\)</span>, with E known analytically. Due to the unknown normalizing constant <span class="math inline">\(Z\)</span>, (it is an EBM…), exact ML/Free-energy based learning is impossible, and as explained above, one must resort to training using contrastive divergence + MCMC (in their case using Stochastic Gradient Langevin Dynamics).</p>
+<h4 id="vaes-vs-cebms-structural-differences-in-the-bregman-divergence-sense">VAEs vs CEBMs: structural differences in the Bregman Divergence sense</h4>
+<p>One major alternative to LEBMs are Variational Auto-Encoders (VAEs). VAEs define a joint density <span class="math inline">\(p(x, z)\)</span> of the form <span class="math display">\[p(x, z) = p(x | z) p(z) = \mathcal N(\mu_\theta(z), \sigma^2 I) \mathcal N(0, 1)\]</span> that is analytically available, and thus can be trained using approximate free-energy maximization. VAEs, define an encoder network <span class="math inline">\(\mu_\theta(x)\)</span> that approximates the posterior <span class="math inline">\(p(z \mid x) = \mathcal N(\mu_\theta(x), \sigma^2 I)\)</span>.</p>
+<p>Authors argue that VAEs compare structure in output variable space <span class="math inline">\(x\)</span>, while CEBMs compare structure in latent variable space <span class="math inline">\(z\)</span>. To justify that, authors rely on the duality characteristics of exponential families. Without entering in too much details, the log-likelihood <span class="math inline">\(\log p(x \mid \theta)\)</span> of an exponential family member with sufficient statistic <span class="math inline">\(t(x)\)</span>, natural parameter <span class="math inline">\(\eta\)</span>, (convex) log-normalizer <span class="math inline">\(A(\eta)\)</span> and mean parameter <span class="math inline">\(\mu\)</span> can be written as: <span class="math display">\[ \log p(x \mid \theta) = &lt;t(x), \eta&gt; - A(\eta) = -D_A(t(x), \mu) + A^\star(t(x))\]</span> Where <span class="math inline">\(A^\star\)</span> is the fenchel conjugate of <span class="math inline">\(A\)</span>, and <span class="math inline">\(D_A\)</span> is the Bregman divergence associated to <span class="math inline">\(A\)</span>. Optimizing over <span class="math inline">\(\eta\)</span> is the same as optimizing over <span class="math inline">\(\mu\)</span>, and we see that maximizing the data likelihood is the same as minimizing the Bregman Divergence <span class="math inline">\(D_A\)</span> between <span class="math inline">\(t(x)\)</span> and <span class="math inline">\(\mu\)</span>.</p>
+<p>Now, applying this to both VAEs and GEBMs, we get:</p>
+<p><span class="math display">\[ \log p_{\text{VAE}}(x, z) = D_A(x, \mu_\theta(z)) +E(x) + E_\lambda(z)\]</span> <span class="math display">\[ \log p_{\text{CEBM}}(x, z) = D_B(\eta(z), \mu_\theta(x)) - B^\star(\eta(z))  + E_{\theta, \lambda}(z)\]</span></p>
+<p>Where <span class="math inline">\(B\)</span> is a tractable log-normalizer of the posterior <span class="math inline">\(p(z \mid x)\)</span>. Note that in the second line, <span class="math inline">\(\mu_\theta\)</span> is the mean parameter associated with the CEBM posterior, while in the first line <span class="math inline">\(\mu_\theta\)</span> is the natural parameter of the VAE conditional <span class="math inline">\(p(x | z)\)</span>. Arguably, the latent sufficient statistic (<span class="math inline">\(\eta(z)\)</span>) space <span class="math inline">\(\mathbb R^H\)</span>, on which <span class="math inline">\(D_B\)</span> is defined is of similar complexity than the latent variable space <span class="math inline">\(\mathbb R^H\)</span>, and it is fair to say that CEBMs carry out comparison in latent space, wherease VAEs do it in output space.</p>
+<h3 id="generative-particle-variational-inference-via-estimation-of-functional-gradients"><a href="http://proceedings.mlr.press/v139/ratzlaff21a.html">Generative Particle Variational Inference via Estimation of Functional Gradients</a></h3>
+<h4 id="background-on-particle-variational-inference">Background on particle variational inference</h4>
+<p>Particle Variational Inference (ParVI) methods are methods which propose to solve the problem of drawing samples from target probability measure with density <span class="math inline">\(p(x)\)</span> known up to a normalization factor. The solution of ParVI methods is to transport a set of particles <span class="math inline">\(\{x^{(i)}_0\}_{i=1}^{N}\)</span> (usually i.i.d, samples from a fixed density <span class="math inline">\(q_0\)</span>) “towards” regions of target high density. As I see it, the rationale for it is that ParVI methods can be seen as generating a path <span class="math inline">\(t \longmapsto \sum_{i=1}^{N} \delta_{x^{(i)}_t}\)</span> that should approximate a gradient flow path <span class="math inline">\(D(\cdot \mid \mid p(x))\)</span> starting from <span class="math inline">\(q_0\)</span>. Typically, D is the KL divergence, as proposed in the famous Stein Variational Gradient Descent paper.</p>
+<p>The main limitation of ParVI methods is that the number of samples N is fixed upfront: there is no way to sample from our approximated target, whose existence we assume when the algorithm converges. Thus, authors in this paper propose to learn an implicit generative model <span class="math inline">\(q_\eta = (f_\eta)_{\#} q_0\)</span></p>
+<h4 id="generative-particle-vi-previous-work">Generative particle VI: previous work</h4>
+<p><a href="https://arxiv.org/pdf/1611.01722.pdf">Liu &amp; Wang (2016)</a> proposed to make particle VI methods generative. In their paper, there is not a deterministic set of paritcles anymore: these particles are replaced with an implicit generative model <span class="math inline">\((f_\eta)_\# p_0\)</span> trained as follows:</p>
+<p>At each time <span class="math inline">\(t\)</span>:</p>
+<ol type="1">
+<li>draw <span class="math inline">\(\{\xi_t^{(i)}\}_{i=1}^{N}\)</span> from <span class="math inline">\(p_0\)</span>, comute <span class="math inline">\(x_t^{(i)} = f_\eta(\xi_t^{(i)})\)</span> for all <span class="math inline">\(i\)</span>.</li>
+<li>compute SVGD descent function <span class="math inline">\(\phi^\star\)</span>, update <span class="math inline">\(x_{t + 1} := x_t^{(i)} - \epsilon \phi^\star(x_t^{(i)})\)</span></li>
+<li>update <span class="math inline">\(\eta\)</span> to map <span class="math inline">\(\xi_t^{{(i)}}\)</span> to <span class="math inline">\(x_{t+1}^{(i)}\)</span></li>
+</ol>
+<p><img src="images/parvi-methods.png" alt="Image" /> <em>Particle VI methods draw samples from a target density <span class="math inline">\(p(x)\)</span> (gray level lines) by transporting initial samples , usually using gradient flow dynamics. Pictured: Stein Variational Gradient Descent trajectories, and LAWGD trajectories (picture credits: <a href="https://arxiv.org/pdf/2006.02509.pdf">SVGD as a gradient flow of the Chi-Squared divergence</a>).</em></p>
+<h4 id="contributions">Contributions</h4>
+<p>Authors of the GPVI paper argue that the algorithm above has a flaw: it still uses a <strong>nonparametric</strong> descent direction <span class="math inline">\(\phi^\star\)</span>, while it should take into acount the generative model parametrization <span class="math inline">\(x = f_\eta(z)\)</span>, which implies that not all perturbations <span class="math inline">\((id + \epsilon f)_\# p_t\)</span> can be spanned by the model. Additional tricks are then ensured to make the computations tractable.</p>
+<p>One of the main argument of why this method is “principled” is the use of functional gradient (e.g. a gradient of a functional defined in a hilbert space <span class="math inline">\(\mathcal H\)</span> of functions, set to be a RKHS in the paper) to compute the “steepest descent” direction of <span class="math inline">\(\mathcal J(f_\eta) = \text{KL}((f_\eta)_\#q_0 \mid \mid p)\)</span>. The update on the parameters <span class="math inline">\(\eta\)</span> relies on this steepest direction in the following way:</p>
+<ol type="1">
+<li>Compute a nonparametric functional gradient <span class="math inline">\(\nabla_f J(f_\eta) := \nabla (f \longmapsto \mathcal J(f))|_{f = f\eta}\)</span></li>
+<li>“Backpropagate” the gradient to parameter space using the formula: <span class="math inline">\(\nabla_\eta \mathcal J(f_\eta) := \mathbb E_z \left \lbrack \frac{\partial f_\eta(z)}{\partial \eta}\nabla_f \mathcal J(f_\eta)(z) \right \rbrack\)</span></li>
+</ol>
+<p>However, I could not figure how they got the update rule for the parameter, which does not seem to be a simple application of the chain rule. In addition, the use of an RKHS when computing <span class="math inline">\(\nabla_f J\)</span> seems to imply that <span class="math inline">\(\{f_\eta \mid \eta \in \mathbb R^d\} = \mathcal H\)</span> which is not the case.</p>
+<h3 id="other-papers-that-i-liked">Other papers that I liked</h3>
+<ul>
+<li><a href="http://proceedings.mlr.press/v139/grathwohl21a.html">Oops I Took A Gradient: Scalable Sampling for Discrete Distributions</a>: great delivery by Grathwohl, introducing a more efficient alternative to Gibbs Sampling with examples on Ising models.</li>
+<li><a href="https://icml.cc/virtual/2021/poster/10275TLDR">Two-way kernel matrix puncturing: towards resource-efficient PCA and spectral clustering</a>. TLDR: you don’t need your whole gram matrix when doing spectral clustring (in the M.O.G case). Continuation of a line of work from Romain, see <a href="https://arxiv.org/pdf/2001.08370.pdf">Random Matrix Theory Proves that Deep Learning Representations of GAN-data Behave as Gaussian Mixtures</a>, and see <a href="https://arxiv.org/pdf/1510.03547.pdf">kernel spectral clustering of large dimensional data</a> for an analysis of a wider class of kernel matrices.</li>
+<li><a href="https://icml.cc/virtual/2021/poster/9537">Scalable Variational Gaussian Processes via Harmonic Kernel Decomposition</a>. Because kernels, and because it is the first time I heard of this harmonic kernel decomposition, a.k.a some form of Fourier-based orthogonal direct sum decomposition of a RKHS.</li>
+</ul>
+</body>
+</html>
