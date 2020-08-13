@@ -1,3 +1,5 @@
 theme: jekyll-theme-slate
 title: [Pierre Glaser's personal blog]
 description: []
+github:
+    is_project_page: false
