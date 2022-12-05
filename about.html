@@ -1,47 +1,47 @@
 <!-- An html document containing my bio-->
 <html>
+  <head>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script>
+        $(function(){ $("head").load("head.html") });
+    </script>
+    <title>About Me</title>
+  </head>
 
-<head>
-  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-  <script>
-      $(function(){ $("head").load("head.html") });
-  </script>
-  <title>About Me</title>
-</head>
+  <body>
+    <!--Navigation bar-->
+    <div id="nav-placeholder">
+    </div>
 
-<body>
-  <!--Navigation bar-->
-  <div id="nav-placeholder">
-  </div>
-
-  <script>
-  $(function(){
-    $("#nav-placeholder").load("nav.html");
-  });
-  </script>
-  <!--end of Navigation bar-->
-  <br>
-  <br>
-
-  <p> Welcome to my personal website! Here are a couple facts about me: </p>
-  <br>
-  <p>
-  <ul>
-    <li style="line-height: 22pt;"> I am a 3rd year PhD Student in the 
-      <a href=https://www.ucl.ac.uk/gatsby/gatsby-computational-neuroscience-unit"> Gatsby Computational Neuroscience Unit</a>
-      under the supervision of <a href=http://www.gatsby.ucl.ac.uk/~gretton />Arthur Gretton</a>. I work on generative models,
-      and their application to domain sciences. I am also interested in theoretical neursocience.
-    </li>
+    <script>
+    $(function(){
+      $("#nav-placeholder").load("nav.html");
+    });
+    </script>
+    <!--end of Navigation bar-->
     <br>
-    <li style="line-height: 22pt;">
-      Previously, I was a software engineer at INRIA, where I worked on improving the performance of distributed
-      scientific computing in Python. Since then, I maintain open sources libraries of the PyData stack. I regularily
-      perform outreach to introduce researchers with Python libraries that could allow them to scale up their
-      experiments, and increase the efficiency of the computational component of their research workflows. </li>
-  </ul>
-  </p>
+    <br>
+
+    <p> Welcome to my personal website! Here are a couple facts about me: </p>
+    <br>
+    <p>
+    <ul>
+      <li style="line-height: 22pt;"> I am a 3rd year PhD Student in the 
+        <a href=https://www.ucl.ac.uk/gatsby/gatsby-computational-neuroscience-unit"> Gatsby Computational Neuroscience Unit</a>
+        under the supervision of <a href=http://www.gatsby.ucl.ac.uk/~gretton />Arthur Gretton</a>. I work on generative models,
+        and their application to domain sciences. I am also interested in theoretical neursocience.
+      </li>
+      <br>
+      <li style="line-height: 22pt;">
+        Previously, I was a software engineer at INRIA, where I worked on improving the performance of distributed
+        scientific computing in Python. Since then, I maintain open sources libraries of the PyData stack. I regularily
+        perform outreach to introduce researchers with Python libraries that could allow them to scale up their
+        experiments, and increase the efficiency of the computational component of their research workflows. </li>
+    </ul>
+    </p>
 
 
-</body>
-
+  </body>
 </html>
