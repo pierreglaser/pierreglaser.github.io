@@ -9,19 +9,11 @@ body {
   padding: 2em 10vw;
 }
 
-:root {
-    --background-color: #0F111A;
-    --foreground-color: #1f2437;
-    --text-color: #F7F8F8;
-    --link-color: #82aaff;
-    --link-visited-color: #B480D6;
-}
-
 html[data-theme='light'] {
     --background-color: #FAFAFA;
     --foreground-color: #e1e1e1;
     --text-color: #1f2437;
-    --link-color: #82aaff;
+    --link-color: #007bff;
     --link-visited-color: #B480D6;
     --filter: invert(12%) sepia(23%) saturate(1034%) hue-rotate(189deg) brightness(95%) contrast(93%);
 }
@@ -169,3 +161,110 @@ a:visited {
 /*   border-bottom: 1px solid #000; */
 /*   border-radius: 0.5em; */
 /* } */
+
+.blog-card {
+  padding: 20px; /* Add padding as needed */
+  border-radius: 4px; /* Add border radius as needed */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add box shadow as needed */
+  /* width: 500px; */
+}
+
+.blog-card a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.blog-card .content a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.blog-card .content {
+  list-style-type: none;
+  padding: 10;
+  /* rounded borders */
+  border-radius: 0.5em;
+}
+
+.blog-card .content .title {
+  font-size: 20px; /* Example font size - adjust as needed */
+}
+
+.blog-card .content h3.title {
+  font-size: 10px; /* Example font size - adjust as needed */
+}
+
+
+.blog-card .content .summary {
+  font-size: 15px; /* Example font size - adjust as needed */
+  margin: 10px; /* Example margin - adjust as needed */
+  /* white-space: nowrap; */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  /* height: 100px; */
+  /* width: 500px; */
+}
+
+.blog-card .content button {
+  color:var(--link-color);
+  border-color:transparent;
+  background-color:transparent;
+  cursor: pointer;
+}
+
+.blog-card .content button:hover {
+  text-decoration: underline;
+}
+
+.blog-card button {
+  color:var(--link-color);
+  border-color:transparent;
+  background-color:transparent;
+  cursor: pointer;
+}
+
+.blog-card button:hover {
+  text-decoration: underline;
+}
+
+.blog-card .read-more {
+  /* Blog card "Read More" link */
+  font-size: 14px; /* Example font size - adjust as needed */
+  color: #007bff; /* Example color - adjust as needed */
+  text-decoration: none; /* Remove default underline */
+  /* Add additional styles as needed */
+}
+
+.blog-card .read-more:hover {
+  text-decoration: underline; /* Add underline on hover */
+}
+
+code {
+  display: inline-block;
+  padding: 2px 4px;
+  margin: 0;
+  font-family: monospace;
+  font-size: 85%;
+  color: var(--text-color);
+  background-color: var(--foreground-color);
+  border: 1px solid #d1d5da;
+  border-radius: 3px;
+}
+
+#more-jax1 {display: none;}
+#more-jax2 {display: none;}
+#more-jax3 {display: none;}
+#more-jax4 {display: none;}
+#dots-jax1 {display: inline;}
+#dots-jax2 {display: inline;}
+#dots-jax3 {display: inline;}
+#dots-jax4 {display: none;}
+
+#more-paper1 {display: none;}
+#more-paper2 {display: none;}
+#dots-paper1 {display: inline;}
+#dots-paper2 {display: inline;}
+
+#more-blog1 {display: none;}
+#dots-blog1 {display: inline;}

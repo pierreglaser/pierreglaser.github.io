@@ -1,0 +1,8 @@
+results = {}
+
+for a in A:
+    for b in B:
+	if a < b:
+	    results[a, b] = f(a, b)
+	else:
+	    results[a, b] = g(a, b)

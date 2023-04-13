@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="description" content="An Introduction to jax">
+		<meta name="author" content="Pierre Glaser">
+		<title>Introduction to JAX</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<!-- <link rel="stylesheet" href="dist/theme/black.css"> -->
+		<link rel="stylesheet" href="dist/theme/material.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+		<style>
+			.reveal h4 {color: orange; font-size: 50px;}
+			.reveal section {font-size: 30px;}
+			.reveal li {padding: 5px 0;}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h3>An Introduction to <code>jax</code></h3>
+					<!-- <h3>Dask</h3> -->
+					<p>
+						<small><a href="https://github.com/pierreglaser">Pierre Glaser</a>, Gatsby Computational Neuroscience Unit</small>
+					</p>
+				</section>
+
+				<section>
+					<h4>Brief Summary</h4>
+					<code>jax</code> is a Python Library that is able to transform <span style="color:orange;">pure</span> and <span style="color:orange;">statically composed</span> programs. These transformations include:
+					<br>
+					<br>
+					<ul>
+						<li>Vectorization</li>
+						<li>(just-in-time) Compilation to CPU/GPU/TPU</li>
+						<li>Automatic Differentiation</li>
+					</ul>
+					<br>
+					<br>
+					Although some of these transformations were handled by separate libraries (such as
+					<code>numba</code> or <code>pytorch</code>, Jax handles them in a unified way; making these features <span style="color:orange">interoperate seamlessly</span>.
+				</section>
+				<!-- <section> -->
+				<!-- 	<h4>Plan</h4> -->
+				<!-- 	<ol> -->
+				<!-- 		<li>State of Python scientific computing frameworks</li> -->
+				<!-- 		<li><code>jax</code> -->
+				<!-- 			<ol> -->
+				<!-- 				<li>background: jax and functional programming</li> -->
+				<!-- 				<li>jax features</li> -->
+				<!-- 				<li>What can and can't you do in jax.</li> -->
+				<!-- 			</ol> -->
+				<!-- 		</li> -->
+				<!-- 		<li>Part -->
+				<!-- 			An Essentialist way of writing jax code</li> -->
+				<!-- 	</ol> -->
+				<!-- </section> -->
+				<section>
+					<section> <h4>The state of Scientific Computing</h4>
+						Canonical language for writing Machine Learning code: <code>Python</code>
+						<br>
+						<br>
+					<ul style="line-height: 45px;">
+					Python achieves a desirable tradeoff between efficiency and flexibility:
+					<br>
+					<br>
+					<li> Python Extensibility allows common compute heavy operations are delegated to efficient implementations...</li>
+					<li> While remaining dynamically typed, garbage collected</li>
+					</ul>
+
+					</section>
+					<section> <h4 style="color:orange">bottlenecks of Writing ML Code</h4>
+						<ul>
+						<li> Not all of scientific computations are still efficient: optimisation are done at a primitive level (BLAS/Lapack) </li>
+						<li> No global program understanding due to the interpreted nature of Python</li>
+						<li> User-level bottleneck when writing complex code: manual batching, manual parallelization... </li>
+						</ul>
+					</section>
+					<!-- <section> Some code -->
+					<!-- 	<pre> -->
+					<!-- 	<code class="language-python"> -->
+<!-- import pandas as pd1 -->
+<!-- df = pd.read_csv('neuron_activities.csv') -->
+<!-- firing_rates = df['firing_rate'].dropna() -->
+<!-- print(firing_rates.mean()) -->
+					<!-- 	</code> -->
+					<!-- 	</pre> -->
+					<!-- </section> -->
+					</section>
+					<section>
+					<section> <h4 style="color:orange">Beating Python at its own game</h4>
+					<ul style="line-height: 45px;">
+						<li> <code>jax</code> operates on pure Python Programs that rely only on <code>jax</code> primitives.
+							<li> <code>jax</code> leverages the extreme polymorphic nature of Python to build global compute graphs out of python functions using a Tracing mechanism</li>
+							<li> A Tracer is passed in lieu of each function's input, and records all operations applied on the input to build the graph describing the said function</li>
+							<li> The graph can then be transformed by either jax (yielding auto-vectorization and auto-differentiation) or third-party compiler libraries </li> in order to perform its advertised features.
+					</section>
+					<section> <h4 style="color:orange" Jax: Position of the Problem></h4>
+					<ul style="line-height: 45px;">
+						<li><code>jax</code> operates on <span style="color:orange"> functionally pure</span> python functions expressed in terms of <code>jax</code> primitives only </li>						
+						<li>the restriction to pure functions:
+							<ul>
+								<li>
+							limits the complexity of the jax codebase, the surface area of the third-party compilers (built by the tensorflow team) operating on <code>jax</code> graphs</li>						
+								<li>allows compilers to leverage referential transparency and perform optimizations such as CSE, parallelization, rematerialization...</li>
+							</ul>
+							</li>
+							<li>The restriction to jax primitives becomes less and less harmful as the jax ecosystem grows (and it does.)</li>
+					</ul>
+					</section>
+					</section>
+				</section>
+
+				<section>
+				<section> <h4 style="color:orange;"><code>jax.jit</code>: inner workings</h4>
+					<ul>
+						<li> <code>jax</code> is a frontend layer that generates a DAG from some python function. </li>	
+						<li> During JIT compilation, this DAG is then extensively optimized using (one of) <code>jax</code>'s backend, like XLA  </li>
+						<li> output format LLVM IR (uses LLVM to generate bytecode)
+					</ul>
+
+					 <img src="jax_workflow.png" alt="Jax Workflow" style="width:500px;height:600px;">
+				</section>
+
+				<section>
+					<ul>
+						<li> Target-independent optimisation: operator fusion, parallelization, loop-invariant code motion, CSE... </li>
+						<li> Target dependent optmization: GPU-specific operator fusion, stream partitionning, cache-line padding etc.
+					</ul>
+				</section>
+
+				<section> <h4>Example: operator fusion</h4>
+					 <img src="2nn_graph.png" alt="Jax Workflow" style="width:600px;height:400px;">
+					 <br>
+					 <img src="fused_op.png" alt="Jax Workflow" style="width:600px;height:50;">
+				</section>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes]
+			});
+		</script>
+	</body>
+</html>

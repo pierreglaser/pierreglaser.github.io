@@ -3,22 +3,37 @@
   <head>
     <link href="css/style.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
-    <script>
-        $(function(){ $("head").load("head.html") });
-    </script>
+    <script src="assets/theme.js"></script>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
     <title>About Me</title>
   </head>
 
   <body>
     <!--Navigation bar-->
-    <div id="nav-placeholder">
+    <div class="nav">
+    <ul>
+      <li><a href="/index.html">Home</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li><a href="/blog.html">Blog</a></li>
+      <li><a href="/talks.html">Talks (Scientific Computing)</a></li>
+      <li style="float:right;">
+        <button id="theme-toggle" onclick=toggleTheme() style="border:none;cursor:pointer;font-size:x-large;float:right;">
+          <i id="img-theme-toggle" class="fa-regular fa-sun"></i>
+        </button>
+      </li>
+    </ul>
     </div>
 
     <script>
-    $(function(){
-      $("#nav-placeholder").load("nav.html");
-    });
+      var toggle = document.getElementById("img-theme-toggle");
+      var storedTheme = localStorage.getItem('theme') || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      if (storedTheme) {
+          document.documentElement.setAttribute('data-theme', storedTheme)
+          toggle.className = "fa-regular fa-moon";
+          if (storedTheme === "light") {
+            toggle.className = "fa-regular fa-sun";
+          }
+      }
     </script>
     <!--end of Navigation bar-->
     <br>

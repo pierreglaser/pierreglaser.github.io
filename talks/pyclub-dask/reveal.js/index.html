@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Scaling up scientific computing and analysis using Dask</title>
+
+		<meta name="description" content="Scaling up scientific computing and analysis Dask">
+		<meta name="author" content="Pierre Glaser">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/monokai.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h3>Scaling up scientific computing and analysis using Dask</h3>
+					<!-- <h3>Dask</h3> -->
+					<p>
+						<small><a href="http://github.com/pierreglaser">Pierre Glaser</a>, Gatsby Computational Neuroscience Unit</small>
+					</p>
+				</section>
+				<section>
+				<section> <h4 style="color:orange">Who am I?</h4>
+
+
+	<div style="font-size:30px">
+<ul>
+	<li class="fragment" data-fragment-index="1">
+		A Gatsby first-year PhD student working on generative models and kernel methods
+	</li>
+	<li class="fragment" data-fragment-index="2">
+Previous job: improving the performance of scientific computing in Python in a distributed setting
+	</li>
+	<li class="fragment" data-fragment-index="3">
+Exposition to computational neuroscience: part of the Parietal INRIA team, that constructs numerical methods for neuroimaging data analysis.
+	</li>
+	</ul>
+	</div>
+					</section>
+				<section> <h4 style="color:orange">What is this talk about:</h4>
+
+
+
+	<span style="color:green">dask</span>, a dynamic task scheduler written in Python, which aims at porting both:
+	<div class="fragment" data-fragment-index="1">
+	<br>
+		<ul>
+			<li> the Python scientific ecosystem </li>
+			<li> programming workflows (data analysis, running experiments)</li>
+		</ul>
+	<br>
+	<br>
+		to out-of-core workloads and cluster of resources
+	<div >
+					</section>
+					<section><h4 style="color:orange">Goals and Non Goals</h4>
+	<div style="font-size:30px">
+<ul>
+	<li class="fragment" data-fragment-index="1">
+		<span style="color:red">NON GOAL:</span> convince you to use tool X/language Y/workflow Z.
+<!-- It is an attempt to raise awareness about the challenges brought by the modern computing era, and the ways people are currently tackling them in the context of doing science. --> 
+	</li>
+	<li class="fragment" data-fragment-index="2">
+		<span style="color:green"> Actual Goal: </span> helping field experts (like you) scale up their experiments through an in-depth description of one successful distributed computing library.
+	</li>
+	</ul>
+	</div>
+	<div class="fragment" data-fragment-index="3">
+	Let's get into it!
+	</div>
+					</section>
+					</section>
+
+					<section>
+					<section><h4 style="color:orange">Distributed Computing: Python's next challenge?</h4>
+
+	<div style="font-size:30px">
+	Python has taken over a large part of scientific computing. Famous scientific success stories:
+	</div>
+	<br>
+  <!-- - reddit, youtube... software sucess is partly a reason of why python was the -->
+  <!--   ground for so many distributed frameworks applications. -->
+<ul>
+	<li class="fragment" data-fragment-index="1">
+  The Mars helicopter mission
+	</li>
+	<li class="fragment" data-fragment-index="2">
+  The M87 black hole imaging
+	</li>
+	<li class="fragment" data-fragment-index="3">
+  Powering most of the AI ecosystem
+	</li>
+</ul>
+					</section>
+					<section> <h4 style="color:orange">Distributed Computing: Python's next challenge?</h4>
+The key reasons for Python's success in science are:
+<ul>
+	<li class="fragment" data-fragment-index="1">
+		Extreme interactivity, combined with 
+	</li>
+	<li class="fragment" data-fragment-index="2">
+		Bare metal performance, through it's C-extensibility
+	</li>
+	<li class="fragment" data-fragment-index="3">
+		Python is also extremely polyvalent (example: wide set of networking primitives)
+	</li>
+</ul>
+					</section>
+
+					<section><h4 style="color:orange">Computing in the 21st Century</h4>
+
+<ul>
+	<li class="fragment" data-fragment-index="1">
+		Amount of data is drastically increasing, often above RAM limits
+	</li>
+	<li class="fragment" data-fragment-index="2">
+  		Computing resources are expanding their capacity, often through computing clusters
+     <!-- (not monolithic supercomputers, instead of network standard ones that can communicate with each other. -->
+	</li>
+	<li class="fragment" data-fragment-index="3">
+		On the other hand, traditional scientific computing libraries in python do not handle either out-of-core data, or distributed computing resources.
+	</li>
+</ul>
+					</section>
+						</section>
+
+					<section>
+					<section><h4 style="color:orange">Some classic python code first...</h4>
+
+						<div style="position:relative; width:1000px; height:120px; margin:0 auto;">
+					<pre class="fragment fade-in-then-out" data-fragment-index="1"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [1]: import pandas as pd
+   ...: df = pd.read_csv('neuron_activities.csv')
+   ...: firing_rates = df['firing_rate'].dropna()
+   ...: print(firing_rates.mean())
+					</code></pre>
+					<pre class="fragment fade-in-then-out" data-fragment-index="2"><code class="language-python" data-trim data-line-numbers="2" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [1]: import pandas as pd
+   ...: df = pd.read_csv('neuron_activities.csv')
+   ...: firing_rates = df['firing_rate'].dropna()
+   ...: print(firing_rates.mean())
+					</code></pre>
+					<pre class="fragment fade-in-then-out" data-fragment-index="3"><code class="language-python" data-trim data-line-numbers="3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [1]: import pandas as pd
+   ...: df = pd.read_csv('neuron_activities.csv')
+   ...: firing_rates = df['firing_rate'].dropna()
+   ...: print(firing_rates.mean())
+					</code></pre>
+					</div>
+
+
+					<div class="fragment fade-in" data-fragment-index="2">
+					What happens if your dataframe cannot fit in memory?
+					</div>
+					<!-- <img src="test-svg.svg"/> -->
+					<!-- <object data="test-svg.svg"</object> -->
+				</section>
+				<section>
+
+<ul>
+	<li >
+		Dask breaks down "large computations" into a set of smaller ones, arranging them into a task graph.
+	</li>
+	<li class="fragment" data-fragment-index="1">
+		Dask never evaluates this task graph unless explictly asked to ("lazy evaluation")
+	</li>
+</ul>
+				</section>
+				</section>
+				<section>
+					<section>
+					<span style="color:orange">A dask module example: dask.array</span>
+					<!-- Instead of greedily executing each lines, dask commands build a task graph: -->
+   <!-- ...: m.visualize('dask-graph.svg') -->
+   <!-- ...: m.compute()  # execute the task graph -->
+						<div style="position:relative; width:1000px; height:120px; margin:0 auto;">
+					<pre class="fragment fade-out" data-fragment-index="1"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [1]: import dask.array as da
+   ...: a = da.random.random((4000, 1000))  # lazy!
+					</code></pre>
+					<pre class="fragment fade-in" data-fragment-index="1"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [1]: import dask.array as da
+   ...: a = da.random.random((4000, 1000))  # lazy!
+   ...: m = a.mean()  # lazy!
+					</code></pre>
+
+					<pre class="fragment fade-in" data-fragment-index="3"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [1]: import dask.array as da
+   ...: a = da.random.random((4000, 1000))  # lazy!
+   ...: m = a.mean()  # lazy!
+   ...: print(m.compute())  # make dask execute the task graph
+					</code></pre>
+					</div>
+
+						<div style="position:relative; width:700px; height:250px; margin:0 auto;">
+  <img width="auto" height="82%" class="fragment fade-out" data-fragment-index="1" src="dask-random-graph.svg" style="border:0;background-color:transparent;position:absolute;top:0;left:0" />
+  <img class="fragment fade-in" data-fragment-index="1" src="dask-graph.svg" style="border:0;background-color:transparent;position:absolute;top:0;left:0;width:700;height:300" /> 
+</div>
+					<p class="fragment" data-fragment-index="2">Each node in this
+					graph represents a unitary python function
+					call with a RAM-friendly memory footprint</p>
+					<!-- <object type="image/svg+xml" data="test-svg.svg"></object> -->
+					
+				<style type="text/css">
+.my-own-code {
+	font-family: Courier;
+	font-size:40px;
+}
+</style>
+				</section>
+				<section>
+					<span style="color:orange">Dask provides two complementary features:</span>
+				<br>
+				<br>
+
+						<div style="position:relative; width:1000px; height:120px; margin:0 auto;">
+					<pre class="fragment fade-in-then-out" data-fragment-index="1"><code class="language-python" data-trim data-line-numbers="2,3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [1]: import dask.array as da
+   ...: a = da.random.random((4000, 1000))  # lazy!
+   ...: m = a.mean()  # lazy!
+					</code></pre>
+					<pre class="fragment current-visible" data-fragment-index="2"><code class="language-python" data-trim data-line-numbers="4" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [1]: import dask.array as da
+   ...: a = da.random.random((4000, 1000))  # lazy!
+   ...: m = a.mean()  # lazy!
+   ...: print(m.compute())  # make dask execute the task graph
+					</code></pre>
+					</div>
+					<ul>
+						<li class="fragment" data-fragment-index="1">The generation of task graphs for a set of supported operations <span class="my-own-code">(array.mean(), array.std(), array.matmul())</span> </li>
+						<br>
+  <li class="fragment current-visible" data-fragment-index="2"> The execution  task graphs coordinated by the dask scheduler and executed by a threadpool<!-- .element: class="fragment" data-fragment-index="1" -->
+</li>
+</ul>
+					</section>
+				<section>
+					<span style="color:orange">Wrapping Up</span>
+					<br>
+					<br>
+					<ul>
+						<li class="fragment" data-fragment-index="1"> The dask scheduler is application agnostic: it is the core low-level object of dask</li>
+						<br>
+						<li class="fragment" data-fragment-index="2"> The <span class="my-own-code">dask.array</span> class builds on top of the dask scheduler and aims to be a drop-in replacement of the <span class="my-own-code">np.ndarray</span> class </li>
+</ul>
+<br>
+<br>
+<span class="fragment" data-fragment-index="3">That's it! We have at our disposal an out-of-core version of <span class="my-own-code">numpy</span></span>
+
+				</section>
+
+				<section> 
+					<span style="color:orange">A more complex task graph</span>
+					<br>
+					<br>
+					<pre class="fragment" data-fragment-index="1"><code class="language-python" data-trim style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [1]: import dask.array as da
+   ...: a = da.random.random((4000, 4000), chunks=(1000, 1000))
+   ...: b = a @ a
+   ...: c = b + b.T
+					</code></pre>
+					<br>
+					<br>
+					<br>
+					<img class="fragment" data-fragment-index="2" src="dask-complex-graph.svg"/>
+					</pre>
+					<span class="fragment" data-fragment-index="3">yet, only 3 lines of standard numpy!</span>
+  <!-- <img width="auto" height="82%" src="dask-complex-graph.svg" style="border:0;background-color:transparent;position:absolute;top:0;left:0" /> -->
+<!-- </div> -->
+				</section>
+				</section>
+				<section>
+				<section> <h4 style="color:orange"> Going beyond numpy </h4>
+					The python scientific ecosystem is a wide collection of packages building on top of each other:
+
+					<img src="python-scientific-stack.jpg" width="600px" height="450px"/>
+				</section>
+				<section><h4 style="color:orange"> Going beyond numpy </h4>
+Extensions for other well known packages : <span class="my-own-code"> dask.dataframe, dask-ml, dask-lightgbm</span>
+<br>
+
+<div style="position:relative; width:1000px; height:120px; margin:0 auto;">
+<pre class="fragment fade-in-then-out" data-fragment-index="1"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [1]: import dask.array as da
+   ...: import dask.dataframe as dd
+   ...: a = da.random.random((int(1e10), 5))
+
+In [2]: df.head(n=2)
+Out[2]:
+          0         1         2         3         4         5
+0  0.199389  0.099026  0.816139  0.885564  0.935145  0.156040
+1  0.671736  0.142255  0.863120  0.855204  0.084645  0.565667
+
+In [28]: %time df.head()
+CPU times: user 84.5 ms, sys: 17.5 ms, total: 102 ms
+Wall time: 101 ms
+</code></pre>
+<pre class="fragment" data-fragment-index="2"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+In [0]: from dask_ml.model_selection import HyperbandSearchCV
+
+In [1]: search = HyperbandSearchCV(clf, params, max_iter=81, random_state=0)
+
+In [2]: search.fit(X_train, y_train, classes=[0, 1]);
+
+In [3]: search.best_params_
+Out[3]: {'alpha': 0.7612985385451453, 'l1_ratio': 0.18850458399555325}
+
+</code></pre>
+</div>
+</section>
+<section>
+<ul>
+						<li> dask extensions such as <span class="my-own-code"> dask.array</span>, 
+<span class="my-own-code"> dask.dataframe</span>,<span class="my-own-code">
+	dask-ml</span> aim to be drop in replacements of the libraries they extend</li>
+<br>
+<li class="fragment" data-fragment-index="2"> The memory layout of data structures, or their out of core aspects are implementation details, and should not change the user level API </li>
+</ul>
+				</section>
+				<section> <h4 style="color:orange"> Going beyond numpy </h4>
+					Dask can also create task graphs from arbitrary code logic using the delayed API
+
+<div style="position:relative; width:1000px; height:120px; margin:0 auto;">
+<pre class="fragment fade-in-then-out" data-fragment-index="1"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+  
+  
+results = {}
+
+
+for a in A:
+    for b in B:
+	if a < b:
+	    results[a, b] = f(a, b)
+	else:
+	    results[a, b] = g(a, b)
+print(results)
+</code></pre>
+<pre class="fragment" data-fragment-index="2"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+results = {}
+from dask import delayed, compute
+
+for a in A:
+    for b in B:
+	if a < b:
+	    results[a, b] = delayed(f)(a, b)  # lazily construct graph
+	else:
+	    results[a, b] = delayed(g)(a, b)
+print(compute(results))  # trigger graph computation
+</code></pre>
+</div>
+				</section>
+
+				<section> <h4 style="color:orange"> Towards an out of core scientific Python </h4>
+<!-- <p>What should we get out of this:</p> -->
+
+<div class="container">
+<div class="col">
+<img src="python-scientific-stack.jpg" width="400px" height="300px"/>
+</div>
+
+					<div class="col">
+
+<ul>
+	<li ><span style="font-size:30px" class="my-own-code"> dask.dataframe, dask-ml, dask-lightgbm</span>...</li>
+	<li><span style="font-size:30px" class="my-own-code"> dask.delayed(f)(a, b)</span></li>
+</ul>
+</div>
+</div>
+<p>
+<ul class="fragment" data-fragment-index="1">
+	<li style="font-size:30px">A significant part of the Python scientific stack has now out-of-core extensions/replacements. Day to day out of core work is now possible!</li>
+	<!-- <br> -->
+	<li style="font-size:30px">As application levels library developpers, we can take part in this effort by making our own projects out-of-core compatible</li>
+</ul>
+</p>
+</section>
+</section>
+<section>
+<section> <h4> Solving the 21st century challenges using dask? </h4>
+<ul>
+	<li style="color:green"> Out of core  scientific computing: check</li>
+	<li class="fragment" data-fragment-index="2" style="color:orange"> How does dask scale to multiple machines?</li>
+</ul>
+</section>
+
+<section><h4 style="color:orange">The local dask scheduler</h4>
+	The default dask scheduler is a lightweight scheduler designed to run on a single machine
+	<!-- <h4 style="color:orange"> Solving the 21st century challenges using dask? </h4> -->
+<!-- <img src="python-scientific-stack.jpg" width="400px" height="300px"/> -->
+<img class="fragment" data-fragment-index="1" width="1000px" height="600px" src="dask-overall-scheme-2.svg" style="border:0;background-color:transparent">
+</section>
+
+<section><h4 style="color:orange">The dask.distributed scheduler</h4>
+	<p style="font-size:30px">
+	The <span style="font-size:30px" class="my-own-code"> dask.distributed </span> package exposes a more sophisticated scheduler designed to send tasks to workers living on different machines:
+	</p>
+	<!-- <h4 style="color:orange"> Solving the 21st century challenges using dask? </h4> -->
+<!-- <img src="python-scientific-stack.jpg" width="400px" height="300px"/> -->
+<img class="fragment" data-fragment-index="1" width="800px" height="370px" src="dask-distributed-overall-scheme-2.svg" style="border:0;object-fit: cover;object-position: 100% 0;background-color:transparent">
+<p class="fragment" data-fragment-index="2" style="font-size:20px"> 
+The dask scheduler and the dask workers are now separates processes that live on various machines of a compute cluster!
+</p>
+</section>
+
+<section><h4 style="color:orange">Advantages of the dask.distributed scheduler</h4>
+<ul>
+	<li class="fragment" data-fragment-index="1" >
+		Feature rich monitoring dashboard (!!)</li>
+	<li class="fragment" data-fragment-index="1" >
+		Can run in asynchronous mode (!!)</li>
+	<li class="fragment" data-fragment-index="2" >
+		Direct interaction with the scheduler for a fine-grain control (less important: in practice, replaces the<span class="my-own-code">dask.delayed</span> API)</li>
+</ul>
+</section>
+
+<section><h4 style="color:orange">Integration with HPC and job-scheduling systems</h4>
+
+
+	<div style="font-size:30px">
+<ul>
+	<li class="fragment" data-fragment-index="1" >
+		Launching the dask workers process is now a cluster-specific action
+	</li>
+	<li class="fragment" data-fragment-index="2" >
+		Dask exposes a set of helper functions that will submit worker creation tasks
+		to a specific cluster manager
+	</li>
+</ul>
+	<div style="font-size:30px">
+
+<div style="position:relative; width:1000px; height:120px; margin:0 auto;">
+<pre class="fragment fade-in-then-out" data-fragment-index="3"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+from dask_jobqueue import SLURMCluster  # but also PBSCluster, MoabCluster...
+# wrapper around a set of workers and scheduler, useful to tear everything
+# down quickly
+# lots of other arguments
+cluster = SLURMCluster(processes=1, cores=1)
+
+# the following command sends 8 sbatch requests that will each launch a dask Worker
+# each dask worker will then connect to the scheduler process
+# each dask worker will have only 1 process and 1 thread
+cluster.scale(8)
+</code></pre>
+<pre class="fragment fade-in-then-out" data-fragment-index="4"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+from dask_jobqueue import SLURMCluster  # but also PBSCluster, MoabCluster...
+# wrapper around a set of workers and scheduler, useful to tear everything
+# down quickly
+# lots of other arguments
+cluster = SLURMCluster(processes=2, cores=1)
+
+# the following command sends 4 sbatch requests that will each launch a dask Worker
+# each dask worker will then connect to the scheduler process
+# each dask worker will have only 1 process and 2 thread
+cluster.scale(8)
+</code></pre>
+<pre class="fragment fade-in-then-out" data-fragment-index="5"><code class="language-python" data-trim data-line-numbers="1..3" style="border:0;background-color:transparent;position:absolute;top:0;left:0;">
+from dask_jobqueue import SLURMCluster  # but also PBSCluster, MoabCluster...
+# wrapper around a set of workers and scheduler, useful to tear everything
+# down quickly
+# lots of other arguments
+cluster = SLURMCluster(processes=4, cores=2)
+
+# the following command sends 2 sbatch requests that will each launch a dask Worker
+# each dask worker will then connect to the scheduler process
+# each dask worker will have only 2 process and 2 threads per process
+cluster.scale(8)
+</code></pre>
+</div>
+</section>
+<section>
+	<div style="font-size:30px">
+<ul>
+	<li class="fragment" data-fragment-index="1" >
+		Once launched and connected to the scheduler, the dask worker
+		are immediately responsive, and will not terminate after one
+		task only.
+	</li>
+	<li class="fragment" data-fragment-index="2" >
+		Arbitrary python tasks can be submitted to the scheduler using the  <span style="font-size:30px" class="my-own-code"> Client </span> interface
+	</li>
+</ul>
+	</div>
+	<br>
+	<div class="fragment" data-fragment-index="3" >
+Running tasks on a cluster can thus be done entirely in an interactive Python session (setup instructions to come)!
+	</div>
+</section>
+</section>
+<section>
+<section> <h4 style="color:orange"> Solving the 21st century computing challenges using dask? </h4>
+	<div style="font-size:30px">
+<ul>
+
+	<li class="fragment" data-fragment-index="1" style="color:green"> Out of core  scientific computing: check</li>
+	<li class="fragment" data-fragment-index="2" style="color:green"> Transparently distributing computations over a cluster of machines: check</li>
+	<li class="fragment" data-fragment-index="3" style="color:green"> Launching experiments natively from a Jupyter notebook instead of using the slurm command line interface: check</li>
+</ul>
+	</div>
+</section>
+<section><h4 style="color:orange"> A few gotchas</h4>
+
+	<div style="font-size:30px">
+<ul>
+	<li class="fragment" data-fragment-index="1"> Setting up jupyter notebooks on a cluster is a bit tedious. Here to help: Instructions, Me (among others!)</li>
+	<li class="fragment" data-fragment-index="2"> Since workers are persistent, it is easy to hold on to unused resources! Remember to scale down your cluster, or set the cluster to the adaptative mode!</li>
+	<li class="fragment" data-fragment-index="3"> You should not run CPU/Memory intensive code on the login node! Jupyter notebooks themselves should be launched from a slurm node</li>
+</ul>
+</div>
+
+	</section>
+	</section>
+<!-- <section> <h4 style="color:orange"> Going beyond numpy </h4> -->
+<!-- solving the 21st century challenges using dask? -->
+<!-- <ul> -->
+<!-- 	<li style="color:green"> out of core </li> -->
+<!-- 	<br> -->
+<!-- 	<li class="fragment" data-fragment-index="2"> The <span class="my-own-code">dask.array</span> class builds on top of the dask scheduler and aims to be a drop-in replacement of the <span class="my-own-code">np.ndarray</span> class </li> -->
+<!-- </ul> -->
+<!-- </section> -->
+					<!-- <p class="fragment" data-fragment-index="1">Each node in this -->
+					<!-- graph represents a unitary python function -->
+					<!-- call with a RAM-friendly memory footprint</p> -->
+					<!-- <object type="image/svg+xml" data="test-svg.svg"></object> -->
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js' },
+					{ src: 'plugin/search/search.js', async: true },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'https://d3js.org/d3.v4.min.js' },
+					{ src: 'node_modules/reveal.js-d3js/d3js.js' },
+				]
+			});
+
+		</script>
+
+	</body>
+</html>

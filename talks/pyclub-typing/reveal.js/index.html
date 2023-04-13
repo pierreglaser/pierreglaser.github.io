@@ -1,0 +1,693 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<meta name="description" content="Type Hint in Python">
+		<meta name="author" content="Pierre Glaser">
+		<title>Type Hints in Python</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<!-- <link rel="stylesheet" href="dist/theme/black.css"> -->
+		<link rel="stylesheet" href="dist/theme/material.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+		<style>
+			.reveal h4 {color: orange; font-size: 50px;}
+			.reveal section {font-size: 30px;}
+			.reveal li {padding: 5px 0;}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1 style="color: orange;">Type Systems</h1>
+					<h3>And applications to type hinting in Python</h3>
+					<p>
+						<small><a href="https://github.com/pierreglaser">Pierre Glaser</a>, Gatsby Computational Neuroscience Unit</small>
+					</p>
+				</section>
+
+				<section>
+					<h4>Brief Summary</h4>
+					<br>
+					<br>
+					<br>
+					<ul>
+						<li class="fragment"><code>Python</code> is a dynamically typed language, allowing for rapid prototyping at the cost of delegating error checking at runtime. </li>
+						<li class="fragment"> Type hints allow user to reintroduce AOT type safety enforcment into Python in a gentle manner (<span style="color:orange">gradual adoption</span>, <span style="color:orange">compile-time enforcement</span>).
+						<li class="fragment">Type Hints were introduced in 2014, and their development have been active ever since (14 accepted PEPs on Typing!). Expect new features regularly</li>
+					</ul>
+					<br>
+					<br>
+				</section>
+				<section>
+					<section> <h4>Talk Outline</h4>
+					<ul style="line-height: 45px;">
+					<br>
+					<br>
+					<li class="fragment">A brief intuition for Type Systems in Computer Science</li>
+					<li class="fragment">An overview of type systems, with application to Python</li>
+					<li class="fragment">The benefits and frontier of Type Hints (LSPs, typed tensors, variadic generics)</li>
+					</ul>
+					</section>
+					</section>
+					<section> 
+					<section><h4>Type Systems in Programming Languages</h4>
+
+						<span class="fragment">
+						Entities in our world can often be clustered into sets, composed of elements with similar characteristics. Human Beings,
+						cups, rocks, etc... These common characteristics can be
+						</span>
+
+						<br>
+
+						<p style="text-align: left; padding-left: 5%;" class="fragment">
+						<ul class="fragment">
+							<li>attributes</li>
+							<li>internal operations (growing)</li>
+							<li>interactions with other elements (conversating with someone)</li>
+						</ul>
+						</p>
+					</section>
+					<section><h4>Type Systems in Programming Languages</h4>
+						Symetry between such sets is broken by constraining behavior:
+						<ul>
+							<li>a cup of coffee cannot breathe</li>
+							<li>I cannot conversate with a rock</li>
+							<li> ... </li>
+						</ul>
+					</section>
+
+					<section> <h4>Type Systems in Programming Languages</h4>
+						<p style="text-align: left;">
+						<span class="fragment">
+						A similar structure can be observed in mathematical objects:
+						</span>
+						<span class="fragment">
+						Given a commutative group $(E, +_E)$ over a field $(\mathbb F, +_F, \cdot_F) $, and an external law $\cdot: \mathbb F
+						\times E \longmapsto E$, E is called a $\mathbb F$-vector space if:
+						</span>
+						<br>
+						<br>
+						<ul style="text-align: left;" class="fragment">
+							<li> $(\lambda_1 +_F \lambda_2) \cdot e = \lambda_1 \cdot e +_E \lambda_2 \cdot e$ </li>
+							<li> $\lambda_1 \cdot (e_1 +_E e_2) = \lambda_1 \cdot e_1 +_E \lambda_1 \cdot e_2$</i>
+						</p>
+						Elements of $E$ thus expose a set of valid operations that can be applied to them: $e_1 + e_2$, $\lambda \cdot e$. Anything else is a prior "invalid".
+					</section>
+					<section> <h4 style="color:orange">Type Systems in Programming Languages</h4>
+						<p style="text-align: left; padding-left: 5%;">
+						<ul style="padding-left: 5%;">
+							<li> progams simulate evolution of entities or mathematical objects, ⇒ same kind of constraints. </li>
+							<li> The specification of a programming language's entities and their interactions is called a <b>type system</b>. </li>
+						</ul>
+						</p>
+
+					</section>
+					<section> <h4 style="color:orange">Type Systems in Programming Languages</h4>
+						<ul style="padding-left: 5%;">
+							<li> A general purpose computer only recieves a sequence of bytes, and makes no intrisnic distinction between them.</li>
+							<li>
+							Above assembly level, <span style="color: orange; font-weight: bold;">every language</span> comes with an engines that checks the validity (or "type safety") of the instructions
+								given to it before translating it into machine code.
+							</li>
+						</ul>
+						<p style="text-align: left; padding-left: 5%;" class="fragment">
+						but when?
+						</p>
+					</section>
+					<section> <h4>A first very simple example</h4>
+						<span class="fragment">
+Let's look at a very simple custom type.
+						</span>
+						<pre class="fragment">
+						<code class="language-python">
+class TwoDVec:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def add(self, other):
+        return TwoDVec(self.x + other.x, self.y + other.y)
+
+
+## the TwoDVec class complies with the following type system:
+class TwoDVec:
+    x: float  # important!
+    y: float  # important!
+
+    def add(self: TwoDVec, other: TwoDVec) -> TwoDVec:
+        ...
+						</code>
+						</pre>
+						<!-- In python, this amounts adding all the types the objets attributes and method arguments of a class. -->
+					</section>
+					<section> <h4>Type Systems in Programming Languages</h4>
+						<p style="text-align: left; padding-left: 5%;">
+						Type Safety can be enforced
+
+						<ul style="padding-left: 5%;">
+							<li>Ahead of Time, using a "compiler" (like in C)</li>
+							<li>At runtime, or "just in time" (like in Python)</li>
+						</ul>
+						<br>
+						<br>
+						</p>
+
+						The second categories of languages are more flexible to protopye with, but do not ensure the safety of programs using a compiler.
+					</section>
+					<section> <h4>Benefits of Static Typing </h4>
+						Benefits of AOT type-checking:
+						<p style="text-align: left;">
+						<ul>
+							<li>Checking type safety is delegated to external tools ⇒ less burden on programmer</li>
+							<li>AOT type checkers understand a program's type structure and can be leveraged by IDE tools</li>
+							<li>⇒ positive feedback loop where the programmer is incited to leverage IDE tools by creating more maintainable, type-checkable code</li>
+						</ul>
+						<!-- More on that later... but for now, let's delve into type systems. -->
+						</p>
+					</section>
+					<section> <h4>Type Hints in Python</h4>
+						<ul>
+<li>Python=runtime type-safety enforcment</li>
+<li>Since 2014, it is possible to define type rules of Python Objects </li>
+<li>These rules have no impact at runtime
+	<!-- . Running or importing <code>TwoDVec.py</code> will never use <code>TwoDVec.pyi</code>. -->
+</li>
+<li> Purpose: be leveraged by type-checkers and other tools to peform type-aware development, which has many advantages.</li>
+						</ul>
+					</section>
+					<section>
+						There are two ways to speficy type rules in python:
+						<br>
+						<br>
+
+						<ul>
+							<li> using separate files (stub files) to define type rules</li>
+							<li> directly within the definition of constructs</li>
+					</section>
+					<section> <h4>Option 1: separating rules and implementations</h4>
+						<pre>
+						<code class="language-python">
+# file 2Dvector.py
+class TwoDVec:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def add(self, other):
+        return TwoDVec(self.x + other.x, self.y + other.y)
+
+
+# file TwoDVec.pyi
+# the folowing is a type rule: is ensures that all objects of the TwoDVec class verify the following rules:
+class TwoDVec
+    x: float  # important!
+    y: float  # important!
+
+    def __init__(self, x: float, y: float) -> None: ...
+    def add(self: TwoDVec, other: TwoDVec) -> TwoDVec: ...
+						</code>
+						</pre>
+					</section>
+					<section> <h4>Option 2: Baking In the Rule in the Implementation</h4>
+						Since Python 3.5, it is possible to speficy type rules directly within Python Expressions:
+						<pre>
+						<code class="language-python">
+# file 2Dvector.py
+class TwoDVec:
+    x: float
+    y: float
+
+    def add(self: TwoDVec, other: TwoDVec) -> TwoDVec:
+        return TwoDVec(self.x + other.x, self.y + other.y)
+						</code>
+						</pre>
+						This code will behave the same as its untyped counterpart.
+					Let us now dig deeper into the structure of types and type systems.
+					</section>
+					</section>
+					<section>
+					<section> <h2>Types and Types Systems</h2>
+					</section>
+					<section> <h4>Types and Types Systems</h4>
+						Sofware constructs are <span style="color: orange; font-weight: bold;"> hierarchical</span>, <span style="color: orange; font-weight: bold;">compositional</span>, and <span style="color: orange; font-weight: bold;">structure-sharing</span>. Type system should reflect that. We will cover:
+						<br>
+						<br>
+						<ul class="fragment">
+							<li>Basic Types</li>
+							<li>Subtypes (and Subtype Polymorphism)</li>
+							<li>Composite Types</li>
+							<li>Type Variables (and Parametric Polymorphism)</li>
+						</ul>
+						<br>
+						<br>
+						<span class="fragment">
+						And the type relationship (or "variance") between them.
+						</span>
+					</section>
+					<section> <h4>Basic (Monomorphic) Types</h4>
+						<pre>
+						<code class="language-python">
+class TwoDVec:
+    x: float
+    y: float
+
+    def add(self: "TwoDVec", other: "TwoDVec") -> "TwoDVec":
+        return TwoDVec(self.x + other.x, self.y + other.y)
+						</code>
+						</pre>
+					<!-- This code implicitly constructs a type, through the syntax <code>class TwoDVec:</code> which can be understood as a -->
+					<!-- type constructor. This type constructor is <span style="color: orange;font-weight: bold;">nullary</span>: it takes no -->
+					<!-- arguments (and returns the <code>TwoDVec</code> type). -->
+					<code>TwoDVec</code>: <span style="color: orange;font-weight: bold;">nullary</span> type constructor.
+					</section>
+					<section> <h4>Subtypes</h4>
+						<!-- The type <code>TwoDVec</code> encompasses several use cases. We might want to consider a subset of -->
+						<code>TwoDVec</code> elements called RateOfChange
+						<pre>
+						<code class="language-python">
+class RateOfChange(TwoDVec):
+    x: float
+    y: float
+
+    def add(self: "RateOfChange", other: "RateOfChange") -> "RateOfChange":
+        return RateOfChange(self.x + other.x, self.y + other.y)
+
+    def total_change(self, T: float) -> "TwoDVec":
+        return TwoDVec(self.x * T, self.y * T)
+						</code>
+						</pre>
+					<!-- Subtypes instances should be able to be used (in the type safety sense) in lieu of their supertypes instances (through -->
+					<!-- runtime coercion), a concept known as subtype polymorphism. -->
+					<span class="fragment">
+					Key Concept: <span style="color: orange;font-weight: bold;">Subtype Polymorphism</span>: coercion subtype instances to their parent type should be possible.
+					</span>
+					</section>
+					<section> <h4>Composite Types</h4>
+						<!-- Classes are not the only sources of type creation in Python. It is possible to create types from already exising ones. Example: -->
+						<pre>
+						<code class="language-python">
+from typing import Self
+
+
+class ThreeDVec:
+    x: float
+    y: float
+    z: float
+
+    def add(self: Self, other: Self) -> Self:
+        return ThreeDVec(self.x + other.x, self.y + other.y, self.z + other.z)
+
+
+from typing import Union
+TwoOrThreeDVec = Union[TwoDVec, ThreeDVec]
+
+def get_dimension(v: TwoOrThreeDVec) -> int:
+    return 2 isinstance(v, TwoDVec) else 3
+						</code>
+						</pre>
+						<!-- <code>Union</code> is a binary type constructor, taking two types as arguments and returning a new type. non-zero arity of the underlying type constructor is the defining feature of composite types. -->
+						<span class="fragment">
+							<code>Union</code>: <span style="color: orange;font-weight: bold;">binary</span> type constructor.
+						</span>
+						<br>
+						<br>
+						<span class="fragment">
+						Question: is <code>TwoOrThreeDVec</code> a subtype of <code>TwoDVec</code>, or the other way around?
+						</span>
+<!-- taking two types as arguments and returning a new type. -->
+					</section>
+					<section>
+						Inherent tension between type structure and the timeline of programming:
+						<br>
+						<br>
+						<ul class="fragment">
+							<li> the more generic structures often arrive at the end of development (when constructs and code logic need to be generalized)
+							</li>
+							<li> While the most specific types happen during prototyping. Top Down programming is hard! </li>
+						</ul>
+					</section>
+					<section> <h4>Product Types</h4>
+						<!-- Union types are not the only kind of composite types. Product Types are types whose instances are tuple of instances of other types. Example: -->
+						<pre>
+						<code class="language-python">
+from typing import Tuple
+TupleOfTwoDVec = Tuple[TwoDVec, TwoDVec]
+
+def add(t: TupleOfTwoDVec) -> TwoDVec:
+    return t[0].add(t[1])  # valid
+    # return t[2].add(t[3])  # invalid
+						</code>
+						</pre>
+
+						<br>
+						<br>
+
+					</section>
+					<section> <h4>Data Types</h4>
+						<!-- Even more general than product types are data types, whose instances contains instances of other types. -->
+						<pre>
+						<code class="language-python">
+from typing import List
+from typing_extensions import Self
+from functools import reduce
+
+
+ListOfTwoDVec = List[TwoDVec]
+
+
+def add_all(l: ListOfTwoDVec) -> TwoDVec:
+    return reduce(lambda x, y: x.add(y), l)
+						</code>
+						</pre>
+					</section>
+					<section> <h4>Subtyping relationships in Data Types</h4>
+						Suppose we define the following data types:
+						<pre>
+						<code class="language-python">
+TupleOfTwoDVec = Tuple[TwoDVec, TwoDVec]
+TupleOfTwoOrThreeDVec = Tuple[TwoOrThreeDVec, TwoOrThreeDVec]
+
+ListOfTwoDVec = List[TwoDVec]
+ListOfTwoOrThreeDVec = List[TwoOrThreeDVec]
+						
+						</code>
+						</pre>
+
+						<ul class="fragment">
+							<li> <span style="font-size: x-large;">is <code>TupleOfTwoOrThreeDVec</code> a subtype of <code>TupleOfTwoDVec</code>?</span></li>
+							<li> <span style="font-size: x-large;">is <code>ListOfTwoOrThreeDVec</code> a subtype of <code>ListOfTwoDVec</code>?</span></li>
+						</ul>
+					</section>
+					<section> <h4>Subtyping relationships in Data Types</h4>
+						<p style="text-align: left; padding-left: 5%;">
+						To answer these questions, let us expose the type rules of
+
+						<br>
+						<br>
+
+						<ul>
+							<li> Tuple[TwoDVec, TwoDVec] vs Tuple[TwoOrThreeDVec, TwoOrThreeDVec]</li>
+							<li> List[TwoDVec] vs List[TwoOrThreeDVec]</li>
+						</ul>
+						</p>
+
+						<p style="text-align: left; padding-left: 5%;">
+						one by one.
+						</p>
+					</section>
+					<section> <h4>Subtyping relationships in Immutable Product Types</h4>
+						<pre>
+						<code class="language-python">
+class TupleOfTwoDVec:
+    def __getitem__(self, index: int) -> TwoDVec: ...
+
+class TupleOfTwoOrThreeDVec:
+    def __getitem__(self, index: int) -> TwoOrThreeDVec: ...
+
+
+tuple_of_two_d_vector: TupleOfTwoDVec = ...
+tuple_of_two_or_three_d_vector: TupleOfTwoOrThreeDVec = ...
+						</code>
+						</pre>
+						<ul class="fragment">
+							<li>
+						<span style="font-size: x-large;">
+							Calling <code>tuple_of_two_d_vector[0]</code> returns a <code>TwoDVec</code>, which is a subtype of
+							<code>TwoOrThreeDVec</code>, and can thus be used in lieu of instances of such types.
+						</span>
+							</li>
+							<li>
+						<span style="font-size: x-large;">
+							Thus, it is safe to use a <code>TupleOfTwoDVec</code> in place of <code>TupleOfTwoOrThreeDVec</code>.
+						</span>
+							</li>
+						</ul>
+
+						<br>
+						<br>
+
+						<p style="text-align: left; padding-left: 5%;" class="fragment">
+						⇒ There is a subtyping hierarchy for immutable product types.
+						</p>
+
+					</section>
+					<section> <h4>Subtyping relationships in Mutable Product Types</h4>
+						<pre>
+						<code class="language-python">
+class ListOfTwoDVec:
+    def __getitem__(self, index: int) -> TwoDVec: ...
+    def __setitem__(self, index: int, value: TwoDVec) -> ListOfTwoDVec: ...
+
+
+class ListOfTwoOrThreeDVec:
+    def __getitem__(self, index: int) -> TwoOrThreeDVec: ...
+    def __setitem__(self, index: int, value: TwoDVec) -> ListOfTwoOrThreeDVec: ...
+
+
+two_d_vector: TwoDVec = ...
+two_or_three_d_vector: TwoOrThreeDVec = ...
+
+l_2dvec: ListOfTwoDVec = ...
+l_23dvec: ListOfTwoOrThreeDVec = ...
+						</code>
+						</pre>
+						<ul class="fragment">
+							<li class="fragment">
+						<span style="font-size: x-large;">
+							Calling <code>l_2dvec.set(l_23dvec)</code> is not a syntax defined by the typing rules above. Thus,
+							<code>ListOfTwoDVec</code> is not a subtype of <code>ListOfTwoOrThreeDVec</code>. 
+						</span>
+							</li>
+							<li class="fragment">
+						<span style="font-size: x-large;">
+							Similarily, <code>ListOfTwoOrThreeDVec</code> is not a subtype of <code>ListOfTwoDVec</code> because calling
+							<code>l_23dvec[0]</code> in lieu of <code>l_2dvec[0]</code> will return a supertype of 
+							<code>TwoDVec</code>, and this thus not type safe.
+						</span>
+						<!-- <span style="font-size: x-large;"> -->
+						<!-- 	Thus, it is safe to use a <code>TupleOfTwoDVec</code> in place of <code>TupleOfTwoOrThreeDVec</code>. -->
+						<!-- </span> -->
+							</li>
+						</ul>
+					<p style="text-align: left; padding-left: 5%;" class="fragment">
+					⇒ No subtying hierarchy can be defined for mutable product types!
+					</p>
+					</section>
+					<section> <h4>Type Variables, Parametrized Types</h4>
+						<p style="text-align: left; padding-left: 5%;">
+						<!-- As the realm of possible types grows, it is useful to reason in term of abstract types values instead of concrete ones. -->
+						<br>
+
+						<ul>
+							<li class="fragment">We denote by <code>T</code> a <span style="color: orange; font-weight: bold;">type variable</span>, e.g. a variable whose array of possible concrete values is (for now) any type ( <code>float, int, ...</code>)
+							</li>
+								<br>
+							<li class="fragment"> <span style="color: orange; font-weight: bold;">Parametrized Types</span> are types constructed using a type variable.</li>
+								<br>
+							<li class="fragment">For instance, <code>List[T]</code> is a type whose array of possible concrete values is any type <code>T</code> for which <code>List[T]</code> is a valid type.
+							</li>
+						</ul>
+						</p>
+
+						<br>
+
+						<p style="text-align: left; padding-left: 5%;" class="fragment">
+						Careful! <code>T</code> is not a type, it is a type variable. Thus, <code>List[T]</code> is not a type, either.
+						</p>
+					</section>
+					<section> <h4>Variance in Parametrized Types</h4>
+						<p style="text-align: left; padding-left: 5%;" class="fragment">
+						let <code>T</code> be a Type Variable, and <code>C</code> be a unary type constructor (e.g. <code>List</code>).
+						For two type variables <code>T1</code> and <code>T2</code> we note <code>T1</code>≤ <code>T2</code> if <code>T1</code>
+						is a subtype of <code>T2</code> (a partial order on types). Then
+						</p>
+						<ul>
+							<li class="fragment"> <code>C</code> is <span style="color: orange; font-weight: bold;">covariant</span> (w.r.t its argument) if <code>T1</code>≤ <code>T2</code>⇒<code>C[T1]</code>≤ <code>C[T2]</code>  </li>
+							<li class="fragment"> <code>C</code> is <span style="color: orange; font-weight: bold;">contravariant</span> (w.r.t its argument) if <code>T1</code>≤ <code>T2</code>⇒<code>C[T2]</code>≤ <code>C[T1]</code>   </li>
+							<li class="fragment"> <code>C</code> is <span style="color: orange; font-weight: bold;">invariant</span> if is is neither covariant nor contravariant. </li>
+						</ul>
+
+						<p style="text-align: left; padding-left: 5%;" class="fragment">
+						In our case, <code>Tuple</code> is covariant (w.r.t its argument), while <code>List</code> is invariant. What type
+						constructor be contravariant?
+						</p>
+					</section>
+					<section> <h4>Parametric Types in Python</h4>
+						<!-- Python defines syntax for parametric types. As an example, we will define a parametric type constructor that can easily construct both real and complex 2d vectors. -->
+						<pre>
+						<code class="language-python">
+from typing import TypeVar, Generic
+
+T = TypeVar("T")
+
+
+RealOrComplex = TypeVar("RealOrComplex", float, complex)
+
+
+class TwoDVector(Generic[RealOrComplex]):  # defines a type constructor/abstract type
+
+    x: RealOrComplex
+    y: RealOrComplex
+
+    def __init__(self, x: RealOrComplex, y: RealOrComplex):
+        self.x = x
+        self.y = y
+
+    def add(self, other: "TwoDVector[RealOrComplex]") -> "TwoDVector[RealOrComplex]":
+        return TwoDVector(self.x + other.x, self.y + other.y)
+						
+						</code>
+						</pre>
+					</section>
+					<section> <h4>Parametric Types in Python</h4>
+						<pre>
+						<code class="language-python">
+class RealTwoDVector(TwoDVector[float]):  # concrete type
+    pass
+
+
+class ComplexTwoDVector(TwoDVector[complex]):  # ditto
+    pass
+
+
+real_vec = RealTwoDVector(1.0, 2.0)
+complex_vec = ComplexTwoDVector(1.0j, 2.0j)
+
+real_vec.add(real_vec)  # OK
+real_vec.add(complex_vec)  # type error
+						
+						</code>
+						</pre>
+					</section>
+					<section> <h4>Function Types</h4>
+						The type of a function is uniquely determined by its signature:
+						<pre>
+						<code class="language-python">
+from typing import Callable
+
+def inc(x: int) -> int:
+    return x + 1
+
+
+def higher_order(f: Callable[[int], int], x: int) -> int:
+    return f(x)
+
+
+ret = higher_order(inc, 1)  # type safe 
+						</code>
+						</pre>
+						<p style="text-align: left; padding-left: 5%;">
+						<ul>
+							<li class="fragment"><code>f</code> is a function of type <code>int -> int</code>, or, in Python syntax, <code>Callable[[int], int]</code>. 
+</li> 
+							<li class="fragment"> function type constructors can take a variable number of arguments
+							</li>
+							<li class="fragment">
+							the constructor themselves are instances of different types, called "kind", or "higher kinded type".
+							</li>
+						</ul>
+						</p>
+					</section>
+					<section> <h4>Variance of Function Types</h4>
+						<ul>
+							<li class="fragment">
+						Function Types are <span style="color: orange; font-weight: bold;">contravariant</span> in their arguments and <span style="color: orange; font-weight: bold;">covariant</span> in their return type.
+							</li>
+							<li class="fragment">
+						Proof by idiom: "If you expect less, you can have more, while if you promise less, you can give more"
+							</li>
+							<li class="fragment">
+						Exercise: explain why the variance of function types sheds a new light on the variance of <code>List</code> and <code>Tuple</code>.
+							</li>
+						</ul>
+					</section>
+
+					<section> <h4>Even More Types in Python</h4>
+						<ul>
+							<li class="fragment">
+						There are more syntactic sugar-type features for types in the Python type system, but these cases cover all the most
+						fundational constructs (apart from structural subtyping).
+							</li>
+							<li class="fragment"> Note that this introduction to type systems is language agonstic, and uniquely grounded in type theory. Python was
+								only used as an application language.
+							</li>
+							<li class="fragment">
+								You just learned something very general! After this tutorial, it will be much easier to read and understand heavily typed languages such as C++, Java, Haskell...
+							</li>
+						</ul>
+					</section>
+					</section>
+					<section>
+					<section> <h4>Benefits of Typing</h4>
+						<ul>
+							<li class="fragment"> All the type information that you expose in your program can be leveraged by Language Servers and Static Type Checkers to verify the type safety of your program, and provide intelligent completion
+							</li>
+							<li class="fragment"> Type annotations also serve a documentation purpose as they explicit the relationship between constructs, and the nature of the arguments of functions, and attributes of classes.
+							</li>
+							<li class="fragment"> Reintroducing a compilation step in Python is very usefule for refactoring and modularity in large codebases </li> 
+							<li class="fragment"> Feel free to ask me for examples and return of experiences about end-to-end use typing in real-world projects!</li>
+						</ul>
+					</section>
+					<section> <h4>The frontier of Typing</h4>
+						<ul class="fragment">
+							<li class="fragment">
+							The common denominator for all of us is array  (or "tensor") processing, which would involve shape and dtype information.
+							</li>
+							<li class="fragment"> Under type system for tensor processing would allow to type-check tensor operations (addition, reduction, etc.).
+							</li>
+							<li class="fragment"> Defining such a type system required an API for variadic parametrized types handling, a challenging problem which was only implemented recently.</li>
+							
+						</ul>
+						<br>
+						<br>
+						<span style="color: orange;" class="fragment">
+						Type Checking tensor operations would remove one of the biggest source of bugs in deep learning codebases.
+						</span>
+					</section>
+					<!-- <section> Benefits of Types -->
+					<!-- 	<pre> -->
+					<!-- 	<code class="language-python"> -->
+<!-- import numpy as np -->
+
+
+<!-- def heavy_op_and_type_error(): -->
+    <!-- large_matrix = np.random.rand(1000, 1000) -->
+    <!-- result = large_matrix @ large_matrix  # O(n³) operations! -->
+    <!-- 1 + "OK"  # raises TypeError: unsupported operand type(s) for +: 'int' and 'str' -->
+    <!-- return result -->
+
+
+<!-- if __name__ == "__main__": -->
+    <!-- heavy_op_and_type_error() -->
+					<!-- 	</code> -->
+					<!-- 	</pre> -->
+					<!-- </section> -->
+					</section>
+
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+				slideNumber: "c/t",
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes, RevealMath.KaTeX ] });
+		</script>
+	</body>
+</html>
