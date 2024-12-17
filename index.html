@@ -3,6 +3,7 @@
   <head>
     <link href="css/style.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="assets/readmore.js"></script>
     <script src="assets/theme.js"></script>
     <title>Pierre Glaser</title>
@@ -81,7 +82,77 @@
   <div class="blog-card">
     <div class="content">
         <!-- <span style="font-weight:normal;font-size:16px;float:right;"> October 2022 </span> -->
-        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> May 2023 - Accepted as a spotlight at UAI 2023! <a href="https://proceedings.mlr.press/v216/glaser23a.html">(pdf)</a></div>
+        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> Under Review (2024) <a target="_blank" href="https://www.biorxiv.org/content/10.1101/2024.11.11.623030v1">(bioRxiv)</a></div>
+        <h2 class="title">SIMPL: Scalable and hassle-free optimisation of neural representations from behaviour</h2>
+      <!-- test -->
+      <!-- <span style="float:right;"> test </span> -->
+      <p class="summary">
+      High-dimensional neural activity in the brain is known to encode low-dimensional, time-evolving, behaviour-related variables. A fundamental goal of neural data analysis consists of identifying such variables and their mapping to neural activity. The
+      canonical approach is to assume  <span id="dots-paper5">...</span><span id="more-paper5">
+the latent variables are behaviour and visualize the subsequent tuning curves. However,      
+significant mismatches between behaviour and the encoded variables may still exist — the agent may be thinking of another location, or be uncertain of its own — distorting the tuning curves 
+and decreasing their interpretability. To address this issue a variety of methods have been proposed to learn this latent variable in an unsupervised manner; these techniques are typically expensive to train, come with many hyperparameters or scale poorly to large datasets complicating their adoption in practice. To solve these issues we propose SIMPL (Scalable Iterative Maximization of Population-coded Latents), an EM-style algorithm which iteratively optimizes latent variables and tuning curves. SIMPL is fast, scalable and exploits behaviour as an initial condition to further improve convergence and identifiability. We show SIMPL accurately recovers latent variables in biologically-inspired spatial and non-spatial tasks. When applied to a large rodent hippocampal dataset SIMPL efficiently finds a modified latent space with smaller, more numerous, and more uniformly-sized place fields than those based on behaviour, suggesting the brain may encode space with greater resolution than previously thought.
+      </span></p>
+    </div>
+<button id="myBtn-paper5" onclick="myFunction('paper5')" type="button">Read more</button>
+  </div>
+  <br>
+  <br>
+  <div class="blog-card">
+    <div class="content">
+        <!-- <span style="font-weight:normal;font-size:16px;float:right;"> October 2022 </span> -->
+        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> NeurIPS 2024 <a target="_blank" href="https://openreview.net/pdf?id=Q74JVgKCP6">(pdf)</a></div>
+        <h2 class="title">Near-Optimality of Contrastive Divergence Algorithms</h2>
+      <!-- test -->
+      <!-- <span style="float:right;"> test </span> -->
+      <p class="summary">
+      We provide a non-asymptotic analysis of the contrastive divergence (CD) algorithm, a training method for unnormalized models. While prior work has established that (for exponential family distributions) the CD iterates asymptotically converge at an \(O(n^{-1/3})\) rate to the true parameter of the data distribution      <span id="dots-paper5">...</span><span id="more-paper5">
+, we show that CD can achieve the parametric rate . Our analysis provides results for various data batching schemes, including fully online and minibatch. We additionally show that CD is near-optimal, in the sense that its asymptotic variance is close to the Cramér-Rao lower bound.
+      </span></p>
+    </div>
+<button id="myBtn-paper5" onclick="myFunction('paper5')" type="button">Read more</button>
+  </div>
+  <br>
+  <br>
+  <div class="blog-card">
+    <div class="content">
+        <!-- <span style="font-weight:normal;font-size:16px;float:right;"> October 2022 </span> -->
+        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> Under Review (2024) <a target="_blank" href="https://arxiv.org/abs/2409.14980">(ArXiv)</a></div>
+        <h2 class="title">(De)-regularized Maximum Mean Discrepancy Gradient Flow</h2>
+      <!-- test -->
+      <!-- <span style="float:right;"> test </span> -->
+      <p class="summary">
+      We introduce a (de)-regularization of the Maximum Mean Discrepancy (DrMMD) and its Wasserstein gradient flow. Existing gradient flows that transport samples from source distribution to target distribution with only target samples, either lack tractable numerical implementations
+      <span id="dots-paper6">...</span><span id="more-paper6">
+(f-divergence flows) or require strong assumptions, and modifications such as noise injection, to ensure convergence (Maximum Mean Discrepancy flows). In contrast, DrMMD flow can simultaneously (i) guarantee near-global convergence for a broad class of targets in both continuous and discrete time, and (ii) be implemented in closed form using only samples. The former is achieved by leveraging the connection between the DrMMD and the χ2-divergence, while the latter comes by treating DrMMD as MMD with a de-regularized kernel. Our numerical scheme uses an adaptive de-regularization schedule throughout the flow to optimally trade off between discretization errors and deviations from the χ2 regime. The potential application of the DrMMD flow is demonstrated across several numerical experiments, including a large-scale setting of training student/teacher networks.
+      </span></p>
+    </div>
+<button id="myBtn-paper6" onclick="myFunction('paper6')" type="button">Read more</button>
+  </div>
+  <br>
+  <br>
+  <div class="blog-card">
+    <div class="content">
+        <!-- <span style="font-weight:normal;font-size:16px;float:right;"> October 2022 </span> -->
+        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> ICML 2024 <a target="_blank" href="https://proceedings.mlr.press/v235/glaser24a.html">(pdf)</a></div>
+        <h2 class="title">Kernel-Based Evaluation of Conditional Biological Sequence Models</h2>
+      <!-- test -->
+      <!-- <span style="float:right;"> test </span> -->
+      <p class="summary">
+      <!-- We introduce the Kernel Calibration Conditional Stein Discrepancy test (KCCSD test), a nonparametric, kernel-based test for assessing the calibration of probabilistic models with well-defined scores. In contrast to previous methods, -->
+      We propose a set of kernel-based tools to evaluate the designs and tune the hyperparameters of conditional sequence models, with a focus on problems in computational biology. The backbone of our tools is a new measure of discrepancy 
+      <span id="dots-paper4">...</span><span id="more-paper4">
+        between the true conditional distribution and the model’s estimate, called the Augmented Conditional Maximum Mean Discrepancy (ACMMD). Provided that the model can be sampled from, the ACMMD can be estimated unbiasedly from data to quantify absolute model fit, integrated within hypothesis tests, and used to evaluate model reliability. We demonstrate the utility of our approach by analyzing a popular protein design model, ProteinMPNN. We are able to reject the hypothesis that ProteinMPNN fits its data for various protein families, and tune the model’s temperature hyperparameter to achieve a better fit.
+      </span></p>
+    </div>
+<button id="myBtn-paper4" onclick="myFunction('paper4')" type="button">Read more</button>
+  </div>
+  <br>
+  <br>
+  <div class="blog-card">
+    <div class="content">
+        <!-- <span style="font-weight:normal;font-size:16px;float:right;"> October 2022 </span> -->
+        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> UAI 2023, <span style="text-decoration:underline;font-weight:bold">Spotlight presentation</span> <a target="_blank" href="https://proceedings.mlr.press/v216/glaser23a.html">(pdf)</a></div>
         <h2 class="title">Fast and Scalable Score-Based Kernel Calibration Tests</h2>
       <!-- test -->
       <!-- <span style="float:right;"> test </span> -->
@@ -106,7 +177,7 @@
   <div class="blog-card">
     <div class="content">
         <!-- <span style="font-weight:normal;font-size:16px;float:right;"> October 2022 </span> -->
-        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> October 2022 - Under Review <a href="https://arxiv.org/abs/2210.14756">(ArXiv)</a></div>
+        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> October 2022 - Under Review <a target="_blank" href="https://arxiv.org/abs/2210.14756">(ArXiv)</a></div>
         <h2 class="title">Learning Unnormalized Models for Simulation-Based Inference</h2>
       <!-- test -->
       <!-- <span style="float:right;"> test </span> -->
@@ -133,7 +204,7 @@ We demonstrate the properties of both methods on a range of synthetic datasets, 
   <div class="blog-card">
     <div class="content">
         <!-- <span style="font-weight:normal;font-size:16px;float:right;"> October 2022 </span> -->
-        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> October 2021 - Accepted at NeurIPS 2021 <a href="https://arxiv.org/abs/2106.08929"> (ArXiv) </a> </div>
+        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> October 2021 - Accepted at NeurIPS 2021 <a target="_blank" href="https://arxiv.org/abs/2106.08929"> (ArXiv) </a> </div>
         <h2 class="title">KALE Flow: A Relaxed KL Gradient Flow for Probabilities with Disjoint Support</h2>
       <!-- test -->
       <!-- <span style="float:right;"> test </span> -->
@@ -158,6 +229,29 @@ We demonstrate the properties of both methods on a range of synthetic datasets, 
       News
     </h2>
     <ul style="list-style: disc;">
+      <li style="line-height: 22pt;">
+        <p><b>2024-12-01</b>: I received a top reviewer award at NeurIPS 2024!</p>
+      </li>
+      <li style="line-height: 22pt;">
+        <p>
+        <b>2024-11-11</b>: New <a target="_blank" href=https://openreview.net/pdf?id=Q74JVgKCP6https://www.biorxiv.org/content/10.1101/2024.11.11.623030v1>preprint</a>, where we construct a new simple and interpretable neural data analyis method.
+        </p>
+      </li>
+      <li style="line-height: 22pt;">
+        <p>
+        <b>2024-09-30</b>: New <a target="_blank" href=https://openreview.net/pdf?id=Q74JVgKCP6>paper</a> on the near-optimality of Contrastive Divergence Algorithms.
+        </p>
+      </li>
+      <li style="line-height: 22pt;">
+        <p>
+        <b>2024-06-01</b>: New <a target="_blank" href=https://arxiv.org/abs/2409.14980>preprint</a> on constructing MMD gradient flows with stronger convergence guarantees.
+        </p>
+      </li>
+      <li style="line-height: 22pt;">
+        <p>
+        <b>2024-06-01</b>: New <a target="_blank" href=https://proceedings.mlr.press/v235/glaser24a.html>paper</a> on evalauting Conditional Biological Sequence Models (a.k.a Protein Design Models).
+        </p>
+      </li>
       <li style="line-height: 22pt;">
         <p>
         <b>2023-10-01</b>: I just started an internship at the <a href=http://probcomp.csail.mit.edu/> MIT Probabilistic Computing Project </a>!
