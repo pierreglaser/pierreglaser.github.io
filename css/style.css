@@ -6,7 +6,10 @@
   box-sizing: border-box;
 }
 body {
-  padding: 2em 10vw;
+  padding-top:10em;
+  padding-bottom:20em;
+  padding-left:20em;
+  padding-right:20em;
 }
 
 html[data-theme='light'] {
@@ -48,7 +51,8 @@ a:visited {
 }
 
 .social-media-links a i.faperso {
-  font-size: 1cm;
+  font-size: 25px;
+  padding: 3px;
 }
 .social-media-links img.image {
   width: 1cm;

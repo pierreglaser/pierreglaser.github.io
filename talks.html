@@ -23,19 +23,6 @@
       </li>
     </ul>
     </div>
-
-    <script>
-      var toggle = document.getElementById("img-theme-toggle");
-      var storedTheme = localStorage.getItem('theme') || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-      if (storedTheme) {
-          document.documentElement.setAttribute('data-theme', storedTheme)
-          toggle.className = "fa-regular fa-moon";
-          if (storedTheme === "light") {
-            toggle.className = "fa-regular fa-sun";
-          }
-      }
-    </script>
-    <!--end of Navigation bar-->
     <br>
     <br>
 

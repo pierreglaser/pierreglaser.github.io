@@ -4,7 +4,7 @@
     <link href="css/style.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <!-- <script src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
-    <script src="assets/theme.js"></script>
+    <script type="text/javascript", src="assets/theme.js"></script>
     <script src="assets/readmore.js"></script>
     <title>About Me</title>
   </head>
@@ -19,24 +19,11 @@
       <li><a href="/talks.html">Talks (Scientific Computing)</a></li>
       <li style="float:right;">
         <button id="theme-toggle" onclick=toggleTheme() style="border:none;cursor:pointer;font-size:x-large;float:right;">
-          <i id="img-theme-toggle" class="fa-regular fa-sun"></i>
+          <i id="img-theme-toggle" class="fa-regular fa-moon"></i>
         </button>
       </li>
     </ul>
     </div>
-
-    <script>
-      var toggle = document.getElementById("img-theme-toggle");
-      var storedTheme = localStorage.getItem('theme') || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-      if (storedTheme) {
-          document.documentElement.setAttribute('data-theme', storedTheme)
-          toggle.className = "fa-regular fa-moon";
-          if (storedTheme === "light") {
-            toggle.className = "fa-regular fa-sun";
-          }
-      }
-    </script>
-    <!--end of Navigation bar-->
     <br>
     <br>
 
