@@ -1,15 +1,18 @@
-function myFunction(more_id) {
-  var dots = document.getElementById("dots-"+more_id);
-  var moreText = document.getElementById("more-"+more_id);
-  var btnText = document.getElementById("myBtn-"+more_id);
+document.querySelectorAll('.toggle-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const card = btn.closest('.blog-card');
+    const summary = card.querySelector('.summary');
+    const dots = summary.querySelector('.dots');
+    const more = summary.querySelector('.more');
 
-  if (dots.style.display === "none") {
-    dots.style.display = "inline";
-    btnText.innerHTML = "Read more"; 
-    moreText.style.display = "none";
-  } else {
-    dots.style.display = "none";
-    btnText.innerHTML = "Read less"; 
-    moreText.style.display = "inline";
-  }
-}
+    if (more.classList.contains('hidden')) {
+      more.classList.remove('hidden');
+      dots.classList.add('hidden');
+      btn.textContent = 'Read less';
+    } else {
+      more.classList.add('hidden');
+      dots.classList.remove('hidden');
+      btn.textContent = 'Read more';
+    }
+  });
+});

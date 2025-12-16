@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
     <script src="assets/theme.js"></script>
-    <script src="assets/readmore.js"></script>
     <title>About Me</title>
   </head>
   <body>
@@ -48,7 +47,7 @@
         <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> December 2022 - <a href="talks/pyclub-typing/reveal.js/index.html"> Slides </a> </div>
       <h2 class="title">An Introduction to Type Sytems and Typing tools in Python</h2>
       <p class="summary">
-      The Python programming language has become the de facto standard for writing a vast majority of scientific code. While being highly general-purpose (unlike alternatives <span id="dots-jax3">...</span><span id="more-jax3"> like matlab or R), Python is *interpreted* and *dynamically-typed*.
+      The Python programming language has become the de facto standard for writing a vast majority of scientific code. While being highly general-purpose (unlike alternatives <span class="dots">...</span><span class="more hidden"> like matlab or R), Python is *interpreted* and *dynamically-typed*.
         <br>
         <br>
 
@@ -67,7 +66,7 @@ On the one hand, type annotations can be adopted gradually, inducing a low barri
 
 In this tutorial, we will learn how to use Python type annotations: we will go through the basic type-theory prerequisites that are necessary for an informed usage of such annotations. We will make a panorama of the current available type-related features in Python, through a series of basic illustrative examples. Finally, we will discuss the additional feature stemming from the integration of type annotations with popular code development toolchains (in particular Language Servers), leading to more informative completion and error checking. 
       </span></p>
-<button id="myBtn-jax3" onclick="myFunction(`jax3`)" type="button">Read more</button>
+    <button class="toggle-btn" type="button">Read more</button>
     </div>
   </div>
   <br>
@@ -80,7 +79,7 @@ In this tutorial, we will learn how to use Python type annotations: we will go t
       <p class="summary">
       Current modern scientific computing frameworks such as <code>numpy</code> or <code>pytorch</code>
 offer an attractive trade-off between ease of use and performance by exposing
-a set of <span id="dots-jax1">...</span><span id="more-jax1">highly optimized common numerical subroutines (implemented in
+a set of <span class="dots">...</span><span class="more hidden">highly optimized common numerical subroutines (implemented in
 low-level languages) via a high-level Python API. However, not much is done in
 these frameworks to optimize performance at a program level.
 <br>
@@ -102,7 +101,7 @@ series of examples. Finally, we will also consider the potential limitations
 of <code>jax</code>, and in particular the "compiled language creep", e.g the additional
 structural constraints that <code>jax</code>-compatible programs must verify.
       </span></p>
-<button id="myBtn-jax1" onclick="myFunction('jax1')" type="button">Read more</button>
+<button class="toggle-btn" type="button">Read more</button>
     </div>
   </div>
 
@@ -115,7 +114,7 @@ structural constraints that <code>jax</code>-compatible programs must verify.
       <p class="summary">
       <!-- Reconciling large scale experiments with exploratory data analysis workflows using Jupyter and Dask. -->
 Data Analysis, and as a consequence, many research tasks, are iterative and exploratory operations.
-The Jupyter Notebook is a celebrated programing environment that, in contrast <span id="dots-jax2">...</span><span id="more-jax2"> to traditional code editors and file-based programming workflows, fits with the exploratory nature of data analysis. 
+The Jupyter Notebook is a celebrated programing environment that, in contrast <span class="dots">...</span><span class="more hidden"> to traditional code editors and file-based programming workflows, fits with the exploratory nature of data analysis. 
 
 <br>
 <br>
@@ -124,7 +123,7 @@ While Jupyter Notebooks are now widely used for quick data wrangling on personal
 <br>
 In this talk, we will see how to run experiments from a SLURM cluster using Jupyter Notebooks alongside with Dask, a distributed computing library written in Python, allowing for large scale and iterative data analysis. This talk is mostly relevant for Python Programming.
 </span></p>
-<button id="myBtn-jax2" onclick="myFunction('jax2')" type="button">Read more</button>
+<button class="toggle-btn" type="button">Read more</button>
     </div>
   </div>
   <br>
@@ -135,16 +134,16 @@ In this talk, we will see how to run experiments from a SLURM cluster using Jupy
         <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> August 2019 - <a href="talks/euroscipy-2019/slides.pdf"> Slides </a> </div>
       <h2 class="title">Parallel Computing in Python: Current State and Recent Advances</h2>
       <p class="summary">
-          Modern hardware is multi-core. Itis crucial for Python to provide high-performance parallelism. This talk will expose to both data-scientists and library developers the current state of affairs and the recent advances for parallel computing with Python. <span id="dots-jax4">...</span><span id="more-jax4">The goal is to help practitioners and developers to make better decisions on this matter.
+          Modern hardware is multi-core. Itis crucial for Python to provide high-performance parallelism. This talk will expose to both data-scientists and library developers the current state of affairs and the recent advances for parallel computing with Python. <span class="dots">...</span><span class="more hidden">The goal is to help practitioners and developers to make better decisions on this matter.
             <br>
             <br>
             I will first cover how Python can interface with parallelism, from leveraging external parallelism of C-extensions –especially the BLAS family– to Python’s multiprocessing and multithreading API. I will touch upon use cases, e.g single vs multi machine, as well as and pros and cons of the various solutions for each use case. Most of these considerations will be backed by benchmarks from the scikit-learn machine learning library. From these low-level interfaces emerged higher-level parallel processing libraries, such as concurrent.futures, joblib and loky (used by dask and scikit-learn) These libraries make it easy for Python programmers to use safe and reliable parallelism in their code. They can even work in more exotic situations, such as interactive sessions, in which Python’s native multiprocessing support tends to fail. I will describe their purpose as well as the canonical use-cases they address.
 </span></p>
-<button id="myBtn-jax4" onclick="myFunction('jax4')" type="button">Read more</button>
+<button class="toggle-btn" type="button">Read more</button>
     </div>
   </div>
   <br>
   <br>
-
+  <script src="assets/readmore.js"></script>
   </body>
 </html>

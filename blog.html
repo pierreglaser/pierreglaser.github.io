@@ -5,7 +5,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <!-- <script src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
     <script type="text/javascript", src="assets/theme.js"></script>
-    <script src="assets/readmore.js"></script>
     <title>About Me</title>
   </head>
 
@@ -37,7 +36,7 @@
       <!-- test -->
       <!-- <span style="float:right;"> test </span> -->
       <p class="summary">
-I have been attending ICML virtually this year - a few papers caught my attention, mostly because they tackle issues related to what I am currently thinking about: generative models.<span id="dots-blog1">...</span><span id="more-blog1">
+I have been attending ICML virtually this year - a few papers caught my attention, mostly because they tackle issues related to what I am currently thinking about: generative models.<span class="dots">...</span><span class="more hidden">
 <br>
 <br>
 Summarizing a paper is a great exercise: putting thoughts into words requires to reach a substantial level of understanding of the paper. Some amount of litterature review is needed to understand the problem setting as well as previous work, which can help to form a high level mental image of the field. Moreover, unlike for your own papers, you can be as vocal as you want about potential weaknesses of the contributions, which help put things in perspective.
@@ -48,10 +47,10 @@ For that reason, I summarized two papers presented in ICML 2021: *Conjugate Ener
 <br>
 Finally, I also included a list of other papers that I enjoyed, but did not summarize.
       </span></p>
-<button id="myBtn-blog1" onclick="myFunction('blog1')" type="button">Read more</button>
+<button class="toggle-btn" type="button">Read more</button>
     </div>
   </div>
     <br>
-
+    <script src="assets/readmore.js"></script>
   </body>
 </html>

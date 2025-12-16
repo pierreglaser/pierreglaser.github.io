@@ -12,6 +12,23 @@ body {
   padding-right:20em;
 }
 
+
+
+/* Tablets */
+@media (max-width: 1024px) {
+  body {
+    padding: 6em 6em 10em 6em;
+  }
+}
+
+/* Phones */
+@media (max-width: 768px) {
+  body {
+    padding: 4em 1rem 6em 1rem;
+  }
+}
+
+
 html[data-theme='light'] {
     --background-color: #FAFAFA;
     --foreground-color: #e1e1e1;
@@ -51,28 +68,17 @@ a:visited {
 }
 
 .social-media-links a i.faperso {
-  font-size: 25px;
+  font-size: 1rem;
   padding: 3px;
-}
-.social-media-links img.image {
-  width: 1cm;
-  height: 1cm;
-  filter: var(--filter);
 }
 
 .nav ul {
   list-style-type: none;
   padding: 0;
-  overflow: hidden;
-  /* background-color: var(--foreground-color); */
   background-color: var(--background-color);
   display: block;
-  /* rounded borders */
   border-radius: 0.5em;
-}
-
-.nav ul li {
-  float: left;
+  display: flex;
 }
 
 .nav ul li a {
@@ -80,7 +86,6 @@ a:visited {
   color: var(--text-color);
   text-align: center;
   padding: 14px 16px;
-  /* text-decoration: none; */
 }
 
 .nav ul li button {
@@ -92,16 +97,6 @@ a:visited {
   text-decoration: none;
 }
 
-/* .nav ul li button:hover { */
-/*   background-color: var(--link-color); */
-/*   /1* color: white; *1/ */
-/* } */
-
-/* Change the link color to #111 (black) on hover */
-/* .nav ul li a:hover { */
-/*   background-color: var(--link-color); */
-/* } */
-
 .social-media-links a {
   color: var(--text-color);
 }
@@ -111,67 +106,17 @@ a:visited {
 }
 
 
-/* main { */
-/*   max-width: 42em; */
-/* } */
-
-/* h1 { */
-/*   font-weight: normal; */
-/* } */
-/* h1 img { */
-/*   vertical-align: middle; */
-/*   max-width: 3rem; */
-/*   border-radius: 0.5rem; */
-/* } */
-
-/* a { */
-/*   color: var(--link-color); */
-/*   text-decoration: none; */
-/* } */
-/* a:is(:hover, :focus) { */
-/*   text-decoration: underline; */
-/* } */
-
-/* h2, h3, h4, h5, h6 { */
-/*   margin-top: 1em; */
-/* } */
-
-/* /1* Style the links inside the navigation bar *1/ */
-/* .topnav a { */
-/*   float: left; */
-/*   color: #f2f2f2; */
-/*   text-align: center; */
-/*   padding: 14px 16px; */
-/*   text-decoration: none; */
-/*   font-size: 17px; */
-/* } */
-
-
-/* main > * + * { */
-/*   /1* https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_selectors *1/ */
-/*   margin-top: 1rem; */
-/* } */
-/* .projects { */
-/*   list-style: none; */
-/*   display: flex; */
-/*   flex-wrap: wrap; */
-/*   gap: 0.5em; */
-/* } */
-/* .projects a { */
-/*   display: block; */
-/*   padding: 0.2em 0.5em; */
-/*   background: rgba(255, 255, 255, 0.031372549); */
-/*   border-top: 1px solid rgba(255, 255, 255, 0.2); */
-/*   border-bottom: 1px solid #000; */
-/*   border-radius: 0.5em; */
-/* } */
-
 .blog-card {
   padding: 20px; /* Add padding as needed */
   border-radius: 4px; /* Add border radius as needed */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add box shadow as needed */
   /* width: 500px; */
 }
+
+.blog-card .hidden {
+  display: none;
+}
+
 
 .blog-card a {
   color: var(--text-color);
@@ -190,35 +135,25 @@ a:visited {
   border-radius: 0.5em;
 }
 
-.blog-card .content .title {
-  font-size: 20px; /* Example font size - adjust as needed */
+/* Title */
+.blog-card .content h2.title {
+  font-size: 1.2rem;
+  line-height: 1.2;
 }
 
-.blog-card .content h3.title {
-  font-size: 10px; /* Example font size - adjust as needed */
+/* Meta text */
+.blog-card .content .meta {
+  font-size: 0.8rem;
+  padding-bottom: 0.5rem;
 }
 
 
 .blog-card .content .summary {
-  font-size: 15px; /* Example font size - adjust as needed */
+  font-size: 1.0rem; /* Example font size - adjust as needed */
   margin: 10px; /* Example margin - adjust as needed */
-  /* white-space: nowrap; */
   overflow: hidden;
   text-overflow: ellipsis;
   display: block;
-  /* height: 100px; */
-  /* width: 500px; */
-}
-
-.blog-card .content button {
-  color:var(--link-color);
-  border-color:transparent;
-  background-color:transparent;
-  cursor: pointer;
-}
-
-.blog-card .content button:hover {
-  text-decoration: underline;
 }
 
 .blog-card button {
@@ -226,22 +161,8 @@ a:visited {
   border-color:transparent;
   background-color:transparent;
   cursor: pointer;
-}
-
-.blog-card button:hover {
-  text-decoration: underline;
-}
-
-.blog-card .read-more {
-  /* Blog card "Read More" link */
-  font-size: 14px; /* Example font size - adjust as needed */
-  color: #007bff; /* Example color - adjust as needed */
-  text-decoration: none; /* Remove default underline */
-  /* Add additional styles as needed */
-}
-
-.blog-card .read-more:hover {
-  text-decoration: underline; /* Add underline on hover */
+  font-size: 0.9rem;
+  display: block;
 }
 
 code {
@@ -255,30 +176,3 @@ code {
   border: 1px solid #d1d5da;
   border-radius: 3px;
 }
-
-#more-jax1 {display: none;}
-#more-jax2 {display: none;}
-#more-jax3 {display: none;}
-#more-jax4 {display: none;}
-
-#dots-jax1 {display: inline;}
-#dots-jax2 {display: inline;}
-#dots-jax3 {display: inline;}
-#dots-jax4 {display: none;}
-
-#more-paper1 {display: none;}
-#more-paper2 {display: none;}
-#more-paper3 {display: none;}
-#more-paper4 {display: none;}
-#more-paper5 {display: none;}
-#more-paper6 {display: none;}
-
-#dots-paper1 {display: inline;}
-#dots-paper2 {display: inline;}
-#dots-paper3 {display: inline;}
-#dots-paper4 {display: inline;}
-#dots-paper5 {display: inline;}
-#dots-paper6 {display: inline;}
-
-#more-blog1 {display: none;}
-#dots-blog1 {display: inline;}
