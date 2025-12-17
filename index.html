@@ -60,7 +60,20 @@
 
   <div class="blog-card">
     <div class="content">
-        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> Under Review (2024) <a target="_blank" href="https://www.biorxiv.org/content/10.1101/2024.11.11.623030v1">(bioRxiv)</a></div>
+        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> ICML 2025 <a target="_blank" href="https://arxiv.org/abs/2503.17405">(ArXiv)</a></div>
+        <h2 class="title">Efficiently Vectorized MCMC on Modern Accelerators</h2>
+      <p class="summary">
+      With the advent of automatic vectorization tools (e.g., JAX's <code>vmap</code> writing multi-chain MCMC algorithms is often now as simple as invoking those tools on single-chain code. Whilst convenient, for various MCMC algorithms this results in a synchronization problem <span class="dots">...</span><span class="more hidden"> -- 
+        loosely speaking,  at each iteration all chains running in parallel must wait until the last chain has finished drawing its sample. In this work, we show how to design single-chain MCMC algorithms in a way that avoids synchronization overheads when vectorizing with tools like <code>vmap</code> by using the framework of finite state machines (FSMs).
+      Using a simplified model, we derive an exact theoretical form of the obtainable speed-ups using our approach, and use it to make principled recommendations for optimal algorithm design. We implement several popular MCMC algorithms as FSMs, including Elliptical Slice Sampling, HMC-NUTS, and Delayed Rejection, demonstrating speed-ups of up to an order of magnitude in experiments. </span></p>
+    </div>
+<button class="toggle-btn" type="button">Read more</button>
+  </div>
+  <br>
+  <br>
+  <div class="blog-card">
+    <div class="content">
+        <div style="font-weight:normal;font-size:16px;padding-bottom:10px;"> ICLR 2025 <a target="_blank" href="https://www.biorxiv.org/content/10.1101/2024.11.11.623030v1">(bioRxiv)</a></div>
         <h2 class="title">SIMPL: Scalable and hassle-free optimisation of neural representations from behaviour</h2>
       <p class="summary">
       High-dimensional neural activity in the brain is known to encode low-dimensional, time-evolving, behaviour-related variables. A fundamental goal of neural data analysis consists of identifying such variables and their mapping to neural activity. The
@@ -89,7 +102,7 @@ and decreasing their interpretability. To address this issue a variety of method
   <br>
   <div class="blog-card">
     <div class="content">
-        <div class="meta"> Under Review (2024) <a target="_blank" href="https://arxiv.org/abs/2409.14980">(ArXiv)</a></div>
+        <div class="meta"> JMLR 2025 <a target="_blank" href="https://arxiv.org/abs/2409.14980">(ArXiv)</a></div>
         <h2 class="title">(De)-regularized Maximum Mean Discrepancy Gradient Flow</h2>
       <p class="summary">
       We introduce a (de)-regularization of the Maximum Mean Discrepancy (DrMMD) and its Wasserstein gradient flow. Existing gradient flows that transport samples from source distribution to target distribution with only target samples, either lack tractable numerical implementations
